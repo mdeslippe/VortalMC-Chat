@@ -52,6 +52,11 @@ public class ConfigurationFile extends AbstractConfigurationFile {
 	/**
 	 * Save the YAML configuration.
 	 * 
+	 * <p>
+	 * Note: This will throw an exception if {@link #load() load()} has not been
+	 * called.
+	 * </p>
+	 * 
 	 * @throws IOException If the file could not be saved.
 	 */
 	@Override
@@ -61,6 +66,10 @@ public class ConfigurationFile extends AbstractConfigurationFile {
 
 	/**
 	 * Get the YAML configuration.
+	 * 
+	 * <p>
+	 * Note: This will return null if {@link #load() load()} has not been called.
+	 * </p>
 	 * 
 	 * @return The YAML configuration.
 	 */

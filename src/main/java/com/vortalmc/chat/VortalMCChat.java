@@ -15,7 +15,6 @@ public class VortalMCChat extends Plugin {
 	 */
 	@Override
 	public void onEnable() {
-
 	}
 
 	/**
