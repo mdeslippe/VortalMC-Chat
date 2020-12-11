@@ -1,5 +1,6 @@
 package com.vortalmc.chat.utils.file;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.md_5.bungee.config.Configuration;
@@ -7,7 +8,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 /**
- * A simple YAML configuration file utility.
+ * A YAML configuration file utility.
  * 
  * @author Myles Deslippe
  */
@@ -32,10 +33,24 @@ public class ConfigurationFile extends AbstractConfigurationFile {
 	 * The ConfigurationFile constructor.
 	 * 
 	 * @param path The path to the configuration file.
+	 * 
 	 * @throws IOException
 	 */
 	public ConfigurationFile(String path) throws IOException {
 		super(path);
+		configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+	}
+
+	/**
+	 * The ConfigurationFile constructor.
+	 * 
+	 * @param path     The path to the configuration file.
+	 * @param defaults The path to the default file configuration.
+	 * 
+	 * @throws IOException
+	 */
+	public ConfigurationFile(String path, String defaults) throws IOException {
+		super(path, new File(defaults));
 		configProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
 	}
 
