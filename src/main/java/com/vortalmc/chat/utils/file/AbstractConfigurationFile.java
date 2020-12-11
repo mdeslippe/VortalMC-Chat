@@ -33,11 +33,11 @@ public abstract class AbstractConfigurationFile extends File {
 	 * Create the configuration file and parent directories if they do not exist on
 	 * the system.
 	 * 
-	 * @throws IOException       If an I/O error occurred
+	 * @throws IOException       If an I/O error occurred.
 	 *
 	 * @throws SecurityException If a security manager exists and its
 	 *                           <code>{@link java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *                           method denies write access to the file
+	 *                           method denies write access to the file.
 	 */
 	public void createIfNotExists() throws IOException {
 		if (!this.getParentFile().exists())

@@ -39,4 +39,19 @@ public class Utils {
 	public static String translateColor(final String message) {
 		return ChatColor.translateAlternateColorCodes('&', message);
 	}
+
+	/**
+	 * Check if an array contains an element.
+	 * 
+	 * @param array   The array to check.
+	 * @param element The element to check for.
+	 * @return The truth value associated with the array containing the element.
+	 */
+	public static boolean checkIfArrayContainsElement(Object[] array, Object element) {
+		for (Object index : array)
+			if (index == element)
+				return true;
+
+		return false;
+	}
 }

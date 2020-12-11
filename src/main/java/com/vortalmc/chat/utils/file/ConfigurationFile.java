@@ -40,7 +40,7 @@ public class ConfigurationFile extends AbstractConfigurationFile {
 	}
 
 	/**
-	 * Load the YAML configuration
+	 * Load the YAML configuration.
 	 * 
 	 * @throws IOException If the file could not be loaded.
 	 */

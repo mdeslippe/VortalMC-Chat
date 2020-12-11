@@ -21,7 +21,6 @@ public class VortalMCChat extends Plugin {
 	 * Called when the plugin is disabled.
 	 */
 	public void onDisable() {
-
 	}
 
 	/**
@@ -31,7 +30,7 @@ public class VortalMCChat extends Plugin {
 	 * Note: This will return null if the plugin is not loaded.
 	 * </p>
 	 * 
-	 * @return The VortalMC-Chat plugin instance
+	 * @return The VortalMC-Chat plugin instance.
 	 */
 	public static Plugin getInstance() {
 		return ProxyServer.getInstance().getPluginManager().getPlugin("VortalMC-Chat");
