@@ -1,0 +1,23 @@
+VortalMCChat:
+  Name: 'vortalmc-chat'
+  Permission: 'vortalmcchat.help'
+  Aliases:
+  - 'vortalmcchat'
+  - 'vchat'
+  - 'vortalchat'
+  Subcommands:
+    Help:
+      Name: 'help'
+      Permission: 'vortalmcchat.help'
+      Aliases: []
+    Version:
+      Name: 'version'
+      Permission: 'vortalmcchat.version'
+      Aliases:
+      - 'ver'
+      - 'v'
+    Reload:
+      Name: 'reload'
+      Permission: 'vortalmcchat.reload'
+      Aliases:
+      - 'rl'

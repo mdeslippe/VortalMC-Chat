@@ -24,6 +24,11 @@ public abstract class CommandListener extends Command {
 	private ArrayList<CommandListener> subCommandListeners = new ArrayList<CommandListener>();
 
 	/**
+	 * The command description.
+	 */
+	private String description;
+
+	/**
 	 * Create a CommandListener.
 	 * 
 	 * @param name The name of the command.
@@ -41,6 +46,28 @@ public abstract class CommandListener extends Command {
 	 */
 	public CommandListener(String name, String permission, String[] aliases) {
 		super(name, permission, aliases);
+	}
+
+	/**
+	 * Get the command's description.
+	 * 
+	 * <p>
+	 * Note: This will return null if the description has not beed defined.
+	 * </p>
+	 * 
+	 * @return The command's description.
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	/**
+	 * Set the command's description.
+	 * 
+	 * @param description The command's description.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	/**

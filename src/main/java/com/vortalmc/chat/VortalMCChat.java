@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
+import com.vortalmc.chat.commands.base.VortalMCChatCommand;
 import com.vortalmc.chat.utils.file.ConfigurationFile;
 import com.vortalmc.chat.utils.file.FileManager;
 import com.vortalmc.chat.utils.mysql.SQLConnection;
@@ -67,20 +68,38 @@ public class VortalMCChat extends Plugin {
 			this.getMySQLConnection().open();
 		} catch (ClassNotFoundException | SQLException e) {
 			this.getLogger().warning("Could not connect to the MySQL database.");
+			this.sqlConnection = null;
 		}
+		
+		this.getProxy().getPluginManager().registerCommand(this, new VortalMCChatCommand());
 	}
-
+	
 	/**
 	 * Called when the plugin is disabled.
 	 */
 	public void onDisable() {
 		try {
-			this.getMySQLConnection().close();
+			if(this.getMySQLConnection() != null)
+				this.getMySQLConnection().close();
 		} catch (SQLException e) {
 			this.getLogger().warning("Error: An error has occurred when attempting to close the MySQL connection.");
 		}
+		
+		this.getProxy().getPluginManager().unregisterCommands(this);
+		this.getProxy().getPluginManager().unregisterListeners(this);
+		this.fileManager = null;
 	}
-
+	
+	/**
+	 * Reload the plugin.
+	 */
+	public void reload() {
+		this.getLogger().info("Reloading the plugin");
+		this.onDisable();
+		this.onEnable();
+		this.getLogger().info("Sucessfully reloaded the plugin");
+	}
+	
 	/**
 	 * Get an instance of the VortalMC-Chat plugin.
 	 * 
@@ -90,8 +109,8 @@ public class VortalMCChat extends Plugin {
 	 * 
 	 * @return The VortalMC-Chat plugin instance.
 	 */
-	public static Plugin getInstance() {
-		return ProxyServer.getInstance().getPluginManager().getPlugin("VortalMC-Chat");
+	public static VortalMCChat getInstance() {
+		return (VortalMCChat) ProxyServer.getInstance().getPluginManager().getPlugin("VortalMC-Chat");
 	}
 
 	/**

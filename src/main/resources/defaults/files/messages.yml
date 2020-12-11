@@ -1,0 +1,26 @@
+Error:
+  Permission-Denied:
+  - '&cVortal&7MC &8» &7You do not have access to that command!'
+VortalMC-Chat:
+  Base-Command:
+    Message:
+    - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
+    - '&7Type &c/VortalMC-Chat help &7to view this message!'
+    - '&7Type &c/VortalMC-Chat version &7to view the current version!'
+    - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
+    Sub-Commands:
+      Help-Command:
+        Message:
+        - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
+        - '&7Type &c/VortalMC-Chat help &7to view this message!'
+        - '&7Type &c/VortalMC-Chat version &7to view the current version!'
+        - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
+        Sub-Commands: null
+      Version-Command:
+        Message:
+        - '&cVortal&7MC &8» &7You are currently running &cVortalMC-Chat ${VERSION}&7!'
+        Sub-Commands:
+      Reload-Command:
+        Message:
+        - '&cVortal&7MC &8» &7Successfully reloaded &cVortalMC-Chat&7!'
+        Sub-Commands: null
