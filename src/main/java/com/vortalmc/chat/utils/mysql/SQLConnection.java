@@ -136,6 +136,7 @@ public final class SQLConnection extends AbstractSQLConnection {
 	 */
 	public ResultSet runQuery(PreparedStatement statement) throws SQLException {
 		ResultSet results = statement.executeQuery();
+		results.next();
 		return results;
 	}
 
@@ -147,7 +148,7 @@ public final class SQLConnection extends AbstractSQLConnection {
 	 * @throws SQLException The SQL Exception.
 	 */
 	public void runUpdate(String statement) throws SQLException {
-		this.runQuery(connection.prepareStatement(statement));
+		this.runUpdate(connection.prepareStatement(statement));
 	}
 
 	/**
@@ -162,5 +163,5 @@ public final class SQLConnection extends AbstractSQLConnection {
 		this.commit();
 		statement.close();
 	}
-
+	
 }
