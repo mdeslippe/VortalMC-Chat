@@ -4,15 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
+import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
+import com.vortalmc.chat.events.bungee.connection.PlayerLeaveEvent;
+import com.vortalmc.chat.events.custom.connection.FirstJoinEvent;
+import com.vortalmc.chat.utils.event.InternalEventManager;
+import com.vortalmc.chat.utils.event.defined.PlayerFirstJoinEvent;
 import com.vortalmc.chat.utils.file.ConfigurationFile;
 import com.vortalmc.chat.utils.file.FileManager;
 import com.vortalmc.chat.utils.misc.cache.CacheManager;
+import com.vortalmc.chat.utils.mysql.CachedRow;
 import com.vortalmc.chat.utils.mysql.SQLConnection;
 
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 
@@ -39,17 +49,23 @@ public class VortalMCChat extends Plugin {
 	private CacheManager cacheManager;
 	
 	/**
+	 * VortalMC-Chat's {@link com.vortalmc.chat.utils.event.InternalEventManager InternalEventManager}.
+	 */
+	private InternalEventManager internalEventManager;
+	
+	/**
 	 * Called when the plugin is enabled.
 	 */
 	@Override
 	public void onEnable() {
 
+		this.cacheManager = new CacheManager();
+		this.internalEventManager = new InternalEventManager();
+		
 		this.loadFiles();
 		this.initMySQL();
 		this.registerCommands();
 		this.registerEvents();
-		this.cacheManager = new CacheManager();
-		
 	}
 
 	/**
@@ -61,6 +77,7 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().unregisterCommands(this);
 		this.getProxy().getPluginManager().unregisterListeners(this);
 		this.fileManager = null;
+		this.internalEventManager = null;
 	}
 
 	/**
@@ -101,7 +118,7 @@ public class VortalMCChat extends Plugin {
 	 * 
 	 * @return The MySQL connection.
 	 */
-	protected SQLConnection getMySQLConnection() {
+	public SQLConnection getMySQLConnection() {
 		return this.sqlConnection;
 	}
 
@@ -113,6 +130,16 @@ public class VortalMCChat extends Plugin {
 	 */
 	public CacheManager getCacheManager() {
 		return this.cacheManager;
+	}
+	
+	/**
+	 * Get the {@link com.vortalmc.chat.utils.event.InternalEventManager InternalEventManager} 
+	 * associated with managing VortalMC-Chat's custom evenets.
+	 * 
+	 * @return The internal event manager.
+	 */
+	public InternalEventManager getInternalEventManager() {
+		return this.internalEventManager;
 	}
 	
 	/**
@@ -173,9 +200,6 @@ public class VortalMCChat extends Plugin {
 			e.printStackTrace();
 			this.sqlConnection = null;
 		}
-		
-		
-		
 	}
 
 	/**
@@ -203,8 +227,92 @@ public class VortalMCChat extends Plugin {
 	 * {@link net.md_5.bungee.api.ProxyServer ProxyServer}.
 	 */
 	private void registerEvents() {
+		// Bungee events.
+		this.getProxy().getPluginManager().registerListener(this, new PlayerJoinEvent());
+		this.getProxy().getPluginManager().registerListener(this, new PlayerLeaveEvent());
+		
+		// Custom events.
+		this.getInternalEventManager().registerListener(new FirstJoinEvent());
 	}
+	
+	/**
+	 * Cache the players information from the database.
+	 * 
+	 * <p>
+	 * Note: This will only return null if there is no connection to the database. 
+	 * </p>
+	 * 
+	 * @param player The player to query.
+	 * 
+	 * @return The players information.
+	 */
+	public CachedRow getPlayerCache(ProxiedPlayer player) {
+		Configuration config = this.getFileManager().getFile("config").getConfiguration();
 
+		try {
+			PreparedStatement statement = this.getMySQLConnection().getConnection().prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
+			statement.setString(1, player.getUniqueId().toString());
+			ResultSet results = this.getMySQLConnection().runQuery(statement);
+
+			CachedRow row;
+
+			if (results.next()) {
+				row = new CachedRow(this.getMySQLConnection(), "VortalMC-Chat", results, 1);
+				results.close();
+			} else {
+				
+				results.close();
+				
+				PreparedStatement statement1 = this.getMySQLConnection().getConnection().prepareStatement(
+						"INSERT INTO `VortalMC-Chat` ("  + 
+							"`uuid`, "                   + 
+							"`chat-color`, "             + 
+							"`prefix`, "	             + 
+							"`suffix`, "                 + 
+							"`nickname`, "               + 
+							"`last-message-sender`, "    + 
+							"`last-message-receiver`, "  + 
+							"`afk-status`)"              + 
+						" VALUES "                       + 
+							"(?, ?, ?, ?, ?, ?, ?, ?);");
+
+				// UUID.
+				statement1.setString(1, player.getUniqueId().toString());
+				// Chat color.
+				statement1.setString(2, config.getString("Defaults.Chat-Color"));
+				// Prefix.
+				statement1.setString(3, config.getString("Defaults.Prefix"));
+				// Suffix
+				statement1.setString(4, config.getString("Defaults.Suffix"));
+				// Nickname
+				statement1.setString(5, config.getString("Defults.Nickname"));
+				// Last message sender.
+				statement1.setNull(6, Types.NULL);
+				// Last message receiver.
+				statement1.setNull(7, Types.NULL);
+				// Afk status.
+				statement1.setBoolean(8, false);
+
+				this.getMySQLConnection().runUpdate(statement1);
+				
+				PreparedStatement statement2 = this.getMySQLConnection().getConnection().prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
+				statement2.setString(1, player.getUniqueId().toString());
+				ResultSet results1 = this.getMySQLConnection().runQuery(statement2);
+				row = new CachedRow(this.getMySQLConnection(), "VortalMC-Chat", results1, 1);
+				results1.close();
+
+				// If the playerdata did not exist previously, that means this is the first time
+				// they have joined the server, so dispatch the first join event.
+				this.getInternalEventManager().dispatchEvent(new PlayerFirstJoinEvent(player));
+			}
+
+			return row;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	/**
 	 * Get an internal resource.
 	 * 

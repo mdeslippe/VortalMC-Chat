@@ -29,7 +29,7 @@ public class ReloadCommand extends CommandListener {
 		
 		VortalMCChat.getInstance().reload();
 		
-		for(String index : messages.getStringList("VortalMC-Chat.Base-Command.Sub-Commands.Reload-Command.Message")) {
+		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Reload-Command.Message")) {
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 		}
 	}

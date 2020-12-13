@@ -27,7 +27,7 @@ public class HelpCommand extends CommandListener {
 	public void onCommand(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		
-		for(String index : messages.getStringList("VortalMC-Chat.Base-Command.Sub-Commands.Help-Command.Message")) {
+		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Help-Command.Message")) {
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 		}
 	}

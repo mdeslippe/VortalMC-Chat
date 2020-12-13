@@ -4,3 +4,8 @@ MySQL:
   Username: root
   Password: admin
   Database: VortalMC-Chat
+Defaults:
+  Chat-Color: '&7'
+  Prefix: ''
+  Suffix: ''
+  Nickname: ''

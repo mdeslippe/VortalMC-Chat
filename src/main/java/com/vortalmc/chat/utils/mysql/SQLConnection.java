@@ -136,7 +136,6 @@ public final class SQLConnection extends AbstractSQLConnection {
 	 */
 	public ResultSet runQuery(PreparedStatement statement) throws SQLException {
 		ResultSet results = statement.executeQuery();
-		results.next();
 		return results;
 	}
 

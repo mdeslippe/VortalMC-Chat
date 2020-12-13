@@ -1,7 +1,8 @@
 package com.vortalmc.chat.utils.misc.cache;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * A cache management utility.
@@ -18,13 +19,24 @@ public class CacheManager {
 	/**
 	 * An ArrayList storing the cache.
 	 */
-	private final ArrayList<Cache> cache;
+	private final HashMap<Object, Cache> cache;
 
 	/**
 	 * Create a CacheManager.
 	 */
 	public CacheManager() {
-		cache = new ArrayList<Cache>();
+		cache = new HashMap<Object, Cache>();
+	}
+
+	/**
+	 * Get cache that is currently being stored.
+	 * 
+	 * @param key The key that is associated with the cache.
+	 * 
+	 * @return The cache.
+	 */
+	public Cache getCache(Object key) {
+		return this.cache.get(key);
 	}
 
 	/**
@@ -32,8 +44,8 @@ public class CacheManager {
 	 * 
 	 * @param cache The cache to add.
 	 */
-	public void addCache(Cache cache) {
-		this.cache.add(cache);
+	public void addCache(Object key, Cache cache) {
+		this.cache.put(key, cache);
 	}
 
 	/**
@@ -49,12 +61,23 @@ public class CacheManager {
 	/**
 	 * Check if cache exists.
 	 * 
+	 * @param key The key associated with the cache to check for.
+	 * 
+	 * @return The truth value associated with the key existing.
+	 */
+	public boolean containsCache(Object key) {
+		return this.cache.containsKey(key);
+	}
+
+	/**
+	 * Check if cache exists.
+	 * 
 	 * @param cache The cache to check for.
 	 * 
 	 * @return The truth value associated with the cache existing.
 	 */
 	public boolean containsCache(Cache cache) {
-		return this.cache.contains(cache);
+		return this.cache.containsValue(cache);
 	}
 
 	/**
@@ -62,7 +85,7 @@ public class CacheManager {
 	 * 
 	 * @return An ArrayList containing all of the cache.
 	 */
-	public ArrayList<Cache> getCache() {
+	public HashMap<Object, Cache> getCache() {
 		return this.cache;
 	}
 
@@ -74,12 +97,15 @@ public class CacheManager {
 	}
 
 	/**
-	 * Get an iterator containing the cache.
+	 * Push all cached.
 	 * 
-	 * @return An iterator containing the cache.
+	 * @throws Exception If any exception occurs when attempting to push the cache.
 	 */
-	public Iterator<Cache> getCacheIterator() {
-		return cache.iterator();
-	}
+	public void pushAllCache() throws Exception {
 
+		Iterator<Entry<Object, Cache>> iterator = cache.entrySet().iterator();
+
+		while (iterator.hasNext())
+			iterator.next().getValue().push();
+	}
 }

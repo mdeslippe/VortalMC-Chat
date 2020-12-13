@@ -1,26 +1,36 @@
 Error:
   Permission-Denied:
   - '&cVortal&7MC &8» &7You do not have access to that command!'
-VortalMC-Chat:
-  Base-Command:
-    Message:
-    - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
-    - '&7Type &c/VortalMC-Chat help &7to view this message!'
-    - '&7Type &c/VortalMC-Chat version &7to view the current version!'
-    - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
-    Sub-Commands:
-      Help-Command:
-        Message:
-        - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
-        - '&7Type &c/VortalMC-Chat help &7to view this message!'
-        - '&7Type &c/VortalMC-Chat version &7to view the current version!'
-        - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
-        Sub-Commands: null
-      Version-Command:
-        Message:
-        - '&cVortal&7MC &8» &7You are currently running &cVortalMC-Chat ${VERSION}&7!'
-        Sub-Commands:
-      Reload-Command:
-        Message:
-        - '&cVortal&7MC &8» &7Successfully reloaded &cVortalMC-Chat&7!'
-        Sub-Commands: null
+Commands:
+  VortalMC-Chat:
+    Base-Command:
+      Message:
+      - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
+      - '&7Type &c/VortalMC-Chat help &7to view this message!'
+      - '&7Type &c/VortalMC-Chat version &7to view the current version!'
+      - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
+      Sub-Commands:
+        Help-Command:
+          Message:
+          - '&cVortal&7MC &8» &7VortalMC-Chat Help Message'
+          - '&7Type &c/VortalMC-Chat help &7to view this message!'
+          - '&7Type &c/VortalMC-Chat version &7to view the current version!'
+          - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
+          Sub-Commands: null
+        Version-Command:
+          Message:
+          - '&cVortal&7MC &8» &7You are currently running &cVortalMC-Chat ${VERSION}&7!'
+          Sub-Commands:
+        Reload-Command:
+          Message:
+          - '&cVortal&7MC &8» &7Successfully reloaded &cVortalMC-Chat&7!'
+          Sub-Commands: null
+Events:
+  Player-Join:
+    First-Join-Message:
+    - '&cVortal&7MC &8» &7&lWelcome &c&l${PLAYER} &7&lto &c&lVortal&7&lMC!'
+    Join-Message:
+    - '&cVortal&7MC &8» &c${PLAYER} &7has joined the server!'
+  Player-Leave:
+    Leave-Message:
+    - '&cVortal&7MC &8» &c${PLAYER} &7has left the server!'
