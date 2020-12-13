@@ -9,3 +9,19 @@ Defaults:
   Prefix: ''
   Suffix: ''
   Nickname: ''
+Channels:
+  Global:
+    Name: global
+    Permission: vortalmcchat.channel.global
+    Format: '${PREFIX} ${NAME} ${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Scope: global
+  Staff:
+    Name: global
+    Permission: vortalmcchat.channel.staff
+    Format: '&c&lSC ${NAME} &8» ${CHAT_COLOR}${MESSAGE}'
+    Scope: global
+  Local:
+    Name: local
+    Permission: vortalmcchat.channel.local
+    Format: '&c[L] &r${PREFIX} ${NAME} ${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Scope: local

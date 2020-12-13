@@ -1,6 +1,6 @@
 name: VortalMC-Chat
 main: com.vortalmc.chat.VortalMCChat
-version: 0.1.2-SNAPSHOT
+version: 0.1.3-SNAPSHOT
 description: The official chat plugin for VortalMC!
 author: Myles Deslippe
 depend: [LuckPerms, Litebans]
