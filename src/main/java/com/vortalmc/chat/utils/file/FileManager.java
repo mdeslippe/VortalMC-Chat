@@ -133,7 +133,7 @@ public class FileManager {
 
 		while (iterator.hasNext()) {
 			ConfigurationFile index = iterator.next().getValue();
-			
+
 			plugin.getLogger().info("Saving the " + index.getName() + " configuration file");
 			index.save();
 			plugin.getLogger().info("Successfully saved " + index.getName());

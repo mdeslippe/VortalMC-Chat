@@ -81,7 +81,8 @@ public class CachedRow implements Cache {
 	 * Get the value at a column in the row.
 	 * 
 	 * <p>
-	 * <strong>Note</strong>: This will return <strong>null</strong> if the specified <strong>column does not exist</strong>.
+	 * <strong>Note</strong>: This will return <strong>null</strong> if the
+	 * specified <strong>column does not exist</strong>.
 	 * </p>
 	 * 
 	 * @param column The target column.
@@ -111,7 +112,7 @@ public class CachedRow implements Cache {
 	public void setColumn(String column, Object value) {
 		this.map.put(column, value);
 	}
-	
+
 	/**
 	 * Update the database with the local cache.
 	 * 
@@ -151,7 +152,7 @@ public class CachedRow implements Cache {
 			Map.Entry<String, Object> index = iterator.next();
 			statement.setObject(i, index.getValue());
 		}
-		
+
 		// Run the update.
 		connection.runUpdate(statement);
 	}

@@ -44,7 +44,7 @@ public abstract class AbstractSQLConnection {
 	 * @param username The username to login.
 	 * @param password The password to login.
 	 */
-	public AbstractSQLConnection(final String host, final Integer port, final String database, final String username, final String password) {
+	public AbstractSQLConnection(String host, Integer port, String database, String username, String password) {
 		this.host = host;
 		this.port = port;
 		this.database = database;

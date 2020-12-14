@@ -19,7 +19,7 @@ public class VersionCommand extends CommandListener {
 		super(
 		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Version.Name"),
 		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Version.Permission"), 
-		(String[]) VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Version.Aliases").toArray(new String[0])
+		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Version.Aliases").toArray(new String[0])
 		);
 	}
 
@@ -27,17 +27,15 @@ public class VersionCommand extends CommandListener {
 	public void onCommand(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		
-		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Version-Command.Message")) {
-			sender.sendMessage(new TextComponent(Utils.translateColor(index).replace("${VERSION}", VortalMCChat.getInstance().getDescription().getVersion())));
-		}
+		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Version-Command.Message"))
+			sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${VERSION}", VortalMCChat.getInstance().getDescription().getVersion()))));
 	}
 
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		
-		for(String index : messages.getStringList("Error.Permission-Denied")) {
+		for(String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
-		}
 	}
 }

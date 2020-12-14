@@ -10,14 +10,27 @@ VortalMCChat:
       Name: 'help'
       Permission: 'vortalmcchat.help'
       Aliases: []
+      Subcommands: null
     Version:
       Name: 'version'
       Permission: 'vortalmcchat.version'
       Aliases:
       - 'ver'
       - 'v'
+      Subcommands: null
     Reload:
       Name: 'reload'
       Permission: 'vortalmcchat.reload'
       Aliases:
       - 'rl'
+      Subcommands: null
+Nickname:
+  Name: 'nickname'
+  Permission: 'vortalmcchat.nickname'
+  Aliases:
+  - 'nick'
+  Subcommands:
+    Name: ${PLAYER}
+    Permission: 'vortalmcchat.nickname.other'
+    Aliases: null
+    Subcommands: null

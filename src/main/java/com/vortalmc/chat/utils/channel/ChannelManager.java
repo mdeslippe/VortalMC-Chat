@@ -3,8 +3,7 @@ package com.vortalmc.chat.utils.channel;
 import java.util.HashMap;
 
 /**
- * A {@link com.vortalmc.chat.utils.channel.Channel Channel} management
- * utility.
+ * A {@link com.vortalmc.chat.utils.channel.Channel Channel} management utility.
  * 
  * @author Myles Deslippe
  */
@@ -38,9 +37,8 @@ public class ChannelManager {
 	 * 
 	 * <p>
 	 * By default, the key to index the channel will be the channel
-	 * {@link com.vortalmc.chat.utils.channel.Channel#getName() name}. If
-	 * you wish to define a custom key, use
-	 * {@link #registerChannel(String, Channel)}.
+	 * {@link com.vortalmc.chat.utils.channel.Channel#getName() name}. If you wish
+	 * to define a custom key, use {@link #registerChannel(String, Channel)}.
 	 * </p>
 	 * 
 	 * @param channel The channel to register.

@@ -4,8 +4,8 @@ package com.vortalmc.chat.utils.channel;
  * The channel scope enum.
  * 
  * <p>
- * These scops are used to define
- * {@link com.vortalmc.chat.utils.channel.Channel Channel} scopes.
+ * These scops are used to define {@link com.vortalmc.chat.utils.channel.Channel
+ * Channel} scopes.
  * <p>
  * 
  * @author Myles Deslippe

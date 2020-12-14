@@ -19,7 +19,7 @@ public class ReloadCommand extends CommandListener {
 		super(
 		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Name"),
 		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Permission"), 
-		(String[]) VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Reload.Aliases").toArray(new String[0])
+		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Reload.Aliases").toArray(new String[0])
 		);
 	}
 
@@ -29,17 +29,15 @@ public class ReloadCommand extends CommandListener {
 		
 		VortalMCChat.getInstance().reload();
 		
-		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Reload-Command.Message")) {
+		for(String index : messages.getStringList("Commands.VortalMC-Chat.Base-Command.Sub-Commands.Reload-Command.Message"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
-		}
 	}
 
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		
-		for(String index : messages.getStringList("Error.Permission-Denied")) {
+		for(String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
-		}
 	}
 }

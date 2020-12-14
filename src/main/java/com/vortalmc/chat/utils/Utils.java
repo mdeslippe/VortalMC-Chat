@@ -1,8 +1,16 @@
 package com.vortalmc.chat.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import com.vortalmc.chat.utils.time.TimeUnit;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * A general utilities class.
@@ -18,8 +26,8 @@ public class Utils {
 	 * 
 	 * @return The translated String.
 	 */
-	public static String translateColor(final String message) {
-		return ChatColor.translateAlternateColorCodes('&', message);
+	public static BaseComponent[] translateColor(final String message) {
+		return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
 	}
 
 	/**
@@ -51,35 +59,35 @@ public class Utils {
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.DECADES);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "de");
+			appendTimeFormat(str, buffer + "decades");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.YEARS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "yr");
+			appendTimeFormat(str, buffer + "years");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.MONTHS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "mo");
+			appendTimeFormat(str, buffer + "months");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.WEEKS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "w");
+			appendTimeFormat(str, buffer + "weeks");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.DAYS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "d");
+			appendTimeFormat(str, buffer + "days");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.HOURS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "h");
+			appendTimeFormat(str, buffer + "hours");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.MINUTES);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "m");
+			appendTimeFormat(str, buffer + "minutes");
 
 		buffer = millisecondsToUnit(stamp, TimeUnit.SECONDS);
 		if (buffer > 0)
-			appendTimeFormat(str, buffer + "s");
+			appendTimeFormat(str, buffer + "seconds");
 
 		return str;
 	}
@@ -124,4 +132,63 @@ public class Utils {
 			return -1;
 		}
 	}
+
+	/**
+	 * Query playerdata from the Mojang servers.
+	 * 
+	 * <p>
+	 * <strong>Note</strong> This will return null if the player does not exist or
+	 * the servers are offline.
+	 * </p>
+	 * 
+	 * @param name The name of the player to query.
+	 * 
+	 * @return The result of the query.
+	 */
+	public static String getMojangPlayerData(String name) {
+
+		try {
+			String payload = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at="
+					+ System.currentTimeMillis();
+
+			HttpURLConnection con = (HttpURLConnection) new URL(payload).openConnection();
+			con.setRequestMethod("GET");
+
+			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) { // success
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null)
+					response.append(inputLine);
+
+				in.close();
+				con = null;
+
+				return response.toString();
+			}
+		} catch (IOException e) {
+			return null;
+		}
+		return null;
+	}
+
+	/**
+	 * Format a hyphenless UUID.
+	 * 
+	 * @param uuid The UUID to format.
+	 * @return The formated UUID.
+	 */
+	public static String formatUUID(String uuid) {
+		StringBuilder sb = new StringBuilder(uuid);
+		sb.insert(8, "-");
+		sb = new StringBuilder(sb.toString());
+		sb.insert(13, "-");
+		sb = new StringBuilder(sb.toString());
+		sb.insert(18, "-");
+		sb = new StringBuilder(sb.toString());
+		sb.insert(23, "-");
+		return sb.toString();
+	}
+
 }

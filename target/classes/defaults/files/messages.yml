@@ -25,6 +25,22 @@ Commands:
           Message:
           - '&cVortal&7MC &8» &7Successfully reloaded &cVortalMC-Chat&7!'
           Sub-Commands: null
+  Nickname:
+    Usage:
+    - '&cVortal&7MC &8» &7To change your nickname use &c/nickname <nickname>&7!'
+    Updated:
+    - '&cVortal&7MC &8» &7You have changed your nickname to &c${NICKNAME}&7!'
+    Removed:
+    - '&cVortal&7MC &8» &7You have removed your nickname!'
+    Other:
+      Usage: 
+      - '&cVortal&7MC &8» &7To chane a users nickname use &c/nickname <user> <nickname>&7!'
+      Player-Not-Specified: 
+      - '&cVortal&7MC &8» &7Please specify the player whos nickname you want to change!'
+      Removed:
+      - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
+      Updated:
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &c${NICKNAME}&7!'
 Events:
   Player-Join:
     First-Join-Message:
@@ -34,6 +50,6 @@ Events:
   Player-Leave:
     Leave-Message:
     - '&cVortal&7MC &8» &c${PLAYER} &7has left the server!'
-  Chat:
-    Mute-Message:
-    - '&cVortal&7MC &8» &7You are currently muted for &c${TIME_REMAINING}&7!'
+Error:
+  Player-Does-Not-Exist:
+  - '&cVortal&7MC &8» &7The player, &c${PLAYER} &7does not exist.'
