@@ -7,12 +7,16 @@ import java.nio.file.StandardCopyOption;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
+import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerLeaveEvent;
 import com.vortalmc.chat.events.custom.connection.FirstJoinEvent;
+import com.vortalmc.chat.utils.Utils;
+import com.vortalmc.chat.utils.channel.Channel;
+import com.vortalmc.chat.utils.channel.ChannelManager;
+import com.vortalmc.chat.utils.channel.ChannelScope;
 import com.vortalmc.chat.utils.event.InternalEventManager;
 import com.vortalmc.chat.utils.event.defined.PlayerFirstJoinEvent;
 import com.vortalmc.chat.utils.file.ConfigurationFile;
@@ -21,7 +25,12 @@ import com.vortalmc.chat.utils.misc.cache.CacheManager;
 import com.vortalmc.chat.utils.mysql.CachedRow;
 import com.vortalmc.chat.utils.mysql.SQLConnection;
 
+import litebans.api.Database;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedDataManager;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -54,6 +63,11 @@ public class VortalMCChat extends Plugin {
 	private InternalEventManager internalEventManager;
 	
 	/**
+	 * VortalMC-Chat's {@link com.vortalmc.chat.utils.channel.ChannelManager ChannelManager}.
+	 */
+	private ChannelManager channelManager;
+	
+	/**
 	 * Called when the plugin is enabled.
 	 */
 	@Override
@@ -61,11 +75,14 @@ public class VortalMCChat extends Plugin {
 
 		this.cacheManager = new CacheManager();
 		this.internalEventManager = new InternalEventManager();
+		this.channelManager = new ChannelManager();
 		
 		this.loadFiles();
 		this.initMySQL();
 		this.registerCommands();
 		this.registerEvents();
+		this.registerChannels();
+		
 	}
 
 	/**
@@ -78,6 +95,7 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().unregisterListeners(this);
 		this.fileManager = null;
 		this.internalEventManager = null;
+		this.cacheManager = null;
 	}
 
 	/**
@@ -143,6 +161,16 @@ public class VortalMCChat extends Plugin {
 	}
 	
 	/**
+	 * Get the {@link com.vortalmc.chat.utils.channel.ChannelManager ChannelManager} 
+	 * associated with managing VortalMC-Chat's chat channels.
+	 * 
+	 * @return The channel manager.
+	 */
+	public ChannelManager getChannelManager() {
+		return this.channelManager;
+	}
+	
+	/**
 	 * Load all of the configuration files.
 	 */
 	private void loadFiles() {
@@ -184,7 +212,9 @@ public class VortalMCChat extends Plugin {
 			this.getMySQLConnection().runUpdate(
 					"CREATE TABLE IF NOT EXISTS `VortalMC-Chat` (\n" + 
 					"    `uuid` VARCHAR(36),\n"                      + 
+					"    `channel` VARCHAR(255),\n"                  + 
 					"    `chat-color` VARCHAR(2),\n"                 + 
+					"    `name-color` VARCHAR(2),\n"                 + 
 					"    `prefix` VARCHAR(255),\n"                   + 
 					"    `suffix` VARCHAR(255),\n"                   + 
 					"    `nickname` VARCHAR(255),\n"                 + 
@@ -230,9 +260,27 @@ public class VortalMCChat extends Plugin {
 		// Bungee events.
 		this.getProxy().getPluginManager().registerListener(this, new PlayerJoinEvent());
 		this.getProxy().getPluginManager().registerListener(this, new PlayerLeaveEvent());
+		this.getProxy().getPluginManager().registerListener(this, new PlayerChatEvent());
 		
 		// Custom events.
 		this.getInternalEventManager().registerListener(new FirstJoinEvent());
+	}
+	
+	/**
+	 * Register all of the channels.
+	 */
+	private void registerChannels() {
+		Configuration config = this.fileManager.getFile("config").getConfiguration().getSection("Channels");
+		
+		for(String index : config.getKeys()) {
+			this.getChannelManager().registerChannel(new Channel(
+					config.getString(index + ".Name"),
+					config.getString(index + ".Permission"),
+					config.getString(index + ".Format"),
+					config.getStringList(index + ".Aliases").toArray(new String[0]),
+					ChannelScope.valueOf(config.getString(index + ".Scope").toUpperCase())
+					));
+		}
 	}
 	
 	/**
@@ -266,7 +314,9 @@ public class VortalMCChat extends Plugin {
 				PreparedStatement statement1 = this.getMySQLConnection().getConnection().prepareStatement(
 						"INSERT INTO `VortalMC-Chat` ("  + 
 							"`uuid`, "                   + 
+							"`channel`, "                + 
 							"`chat-color`, "             + 
+							"`name-color`, "             + 
 							"`prefix`, "	             + 
 							"`suffix`, "                 + 
 							"`nickname`, "               + 
@@ -274,24 +324,37 @@ public class VortalMCChat extends Plugin {
 							"`last-message-receiver`, "  + 
 							"`afk-status`)"              + 
 						" VALUES "                       + 
-							"(?, ?, ?, ?, ?, ?, ?, ?);");
+							"(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
 				// UUID.
 				statement1.setString(1, player.getUniqueId().toString());
+				// Channel.
+				statement1.setString(2, config.getString("Defaults.Channel"));
 				// Chat color.
-				statement1.setString(2, config.getString("Defaults.Chat-Color"));
+				statement1.setString(3, config.getString("Defaults.Chat-Color"));
+				// Name color.
+				statement1.setString(4, config.getString("Defaults.Name-Color"));
 				// Prefix.
-				statement1.setString(3, config.getString("Defaults.Prefix"));
+				if(config.getString("Defaults.Prefix") != "")
+					statement1.setString(5, config.getString("Defaults.Prefix"));
+				else
+					statement1.setString(5, "none");
 				// Suffix
-				statement1.setString(4, config.getString("Defaults.Suffix"));
-				// Nickname
-				statement1.setString(5, config.getString("Defults.Nickname"));
+				if(config.getString("Defaults.Suffix") != "" && config.getString("Defaults.Suffix") != null)
+					statement1.setString(6, config.getString("Defaults.Suffix"));
+				else
+					statement1.setString(6, "none");
+				// Nickname.
+				if(config.getString("Defults.Nickname") != "" && config.getString("Defaults.Suffix") != null)
+					statement1.setString(7, config.getString("Defaults.Nickname"));
+				else
+					statement1.setString(7, "none");
 				// Last message sender.
-				statement1.setNull(6, Types.NULL);
+				statement1.setString(8, "none");
 				// Last message receiver.
-				statement1.setNull(7, Types.NULL);
+				statement1.setString(9, "none");
 				// Afk status.
-				statement1.setBoolean(8, false);
+				statement1.setBoolean(10, false);
 
 				this.getMySQLConnection().runUpdate(statement1);
 				
@@ -314,6 +377,115 @@ public class VortalMCChat extends Plugin {
 	}
 	
 	/**
+	 * Dependencies that are used by VortalMC-Chat can be accessed in this class.
+	 * 
+	 * @author Myles Deslippe
+	 */
+	public static class Dependencies {
+		
+		/**
+		 * Get the LiteBans API.
+		 * 
+		 * @return The LiteBans API.
+		 */
+		public static Database getLiteBansAPI() {
+			return Database.get();
+		}
+		
+		/**
+		 * Get the LuckPerms API.
+		 * 
+		 * @return The LuckPerms API.
+		 */
+		public static LuckPerms getLuckPermsAPI() {
+			return LuckPermsProvider.get();
+		}
+		
+	}
+	
+	/**
+	 * Dispatch a message as a player.
+	 * 
+	 * <p>
+	 * <strong>Note</strong>: This will only broadcast the message to the channel
+	 * the player is in.
+	 * </p>
+	 * 
+	 * @param player  The player to dispatch the message as.
+	 * @param message The message to dispatch.
+	 */
+	public void dispatchMessage(ProxiedPlayer player, String message) {
+		CachedRow row = (CachedRow) this.getCacheManager().getCache(player.getUniqueId());
+		Channel channel = this.getChannelManager().getChannel(row.getValue("channel").toString());
+		
+		if (player.hasPermission(channel.getPermission())) {
+			
+			String format = channel.getFormat();
+			
+			if(!row.getValue("prefix").toString().equalsIgnoreCase("none"))
+				format = format.replace("${PREFIX}", row.getValue("prefix").toString());
+			else
+				format = format.replace("${PREFIX}", "");
+			
+			if(!row.getValue("suffix").toString().equalsIgnoreCase("none"))
+				format = format.replace("${SUFFIX}", row.getValue("suffix").toString());
+			else
+				format = format.replace("${SUFFIX}", "");
+			
+			if(!row.getValue("nickname").toString().equalsIgnoreCase("none"))
+				format = format.replace("${NICKNAME}", row.getValue("nickname").toString());
+			else
+				format = format.replace("${NICKNAME}", "");
+			
+			format = format.replace("${NAME_COLOR}", row.getValue("name-color").toString());
+			format = format.replace("${CHAT_COLOR}", row.getValue("chat-color").toString());
+			format = format.replace("${USERNAME}", player.getName());
+			format = format.replace("${NAME}", player.getName());
+			format = format.replace("${DISPLAY_NAME}", this.getUsersDisplayName(player));
+			format = format.replace("${MESSAGE}", message);
+			
+			
+			for(ProxiedPlayer index : ProxyServer.getInstance().getPlayers())
+				if(index.hasPermission(channel.getPermission()))
+					index.sendMessage(new TextComponent(Utils.translateColor(format)));
+			
+		}
+	}
+	
+	/**
+	 * Get a {@link net.md_5.bungee.api.connection.ProxiedPlayer Player} displayname.
+	 * 
+	 * @param player The player.
+	 * 
+	 * @return The displayname.
+	 */
+	public String getUsersDisplayName(ProxiedPlayer player) {
+		CachedRow row = (CachedRow) this.getCacheManager().getCache(player.getUniqueId());
+		CachedDataManager data = Dependencies.getLuckPermsAPI().getUserManager().getUser(player.getName()).getCachedData();
+		
+		String nickname = String.valueOf(row.getValue("nickname"));
+		String nameColor = String.valueOf(row.getValue("name-color"));
+		String prefix = data.getMetaData().getPrefix();
+		String suffix = data.getMetaData().getSuffix();
+		String username = player.getName();
+		
+		String buffer = "";
+		
+		if(prefix != null)
+			buffer = buffer + prefix + " ";
+		
+		if(!nickname.equalsIgnoreCase("none")) 
+			buffer = buffer + nameColor + nickname + " ";
+		 else 
+			buffer = buffer + nameColor + username + " ";
+		
+		if(suffix != null) 
+			buffer = buffer+ suffix + " ";
+		
+		return buffer.substring(0, buffer.length() - 1);
+	}
+	
+	/**
 	 * Get an internal resource.
 	 * 
 	 * <p>
@@ -330,7 +502,8 @@ public class VortalMCChat extends Plugin {
 
 		try {
 			File file = File.createTempFile(path.split("\\.")[0], path.split("\\.")[1]);
-			Files.copy(this.getClass().getClassLoader().getResourceAsStream(path), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(this.getClass().getClassLoader().getResourceAsStream(path), file.toPath(),
+					StandardCopyOption.REPLACE_EXISTING);
 			return file;
 		} catch (Exception e) {
 			return null;

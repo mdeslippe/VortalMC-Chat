@@ -15,8 +15,8 @@ import com.vortalmc.chat.utils.misc.cache.Cache;
  * A rowset caching utility.
  * 
  * </p>
- * In order for {@link #update()} to work correctly, there must be a uuid
- * column in the databse that uniquely identifies the row that is being updated.
+ * In order for {@link #update()} to work correctly, there must be a uuid column
+ * in the databse that uniquely identifies the row that is being updated.
  * </p>
  * 
  * @author Myles Deslippe
@@ -73,16 +73,51 @@ public class CachedRow implements Cache {
 	 * 
 	 * @return
 	 */
-	public HashMap<String, Object> getRow() {
+	public HashMap<String, Object> getAllColumns() {
 		return this.map;
 	}
 
 	/**
+	 * Get the value at a column in the row.
+	 * 
+	 * <p>
+	 * <strong>Note</strong>: This will return <strong>null</strong> if the specified <strong>column does not exist</strong>.
+	 * </p>
+	 * 
+	 * @param column The target column.
+	 * 
+	 * @return The value at the column.
+	 */
+	public Object getValue(String column) {
+		return this.map.get(column);
+	}
+
+	/**
+	 * Update the value at a column.
+	 * 
+	 * @param column The column to update.
+	 * @param value  The new value.
+	 */
+	public void updateColumn(String column, Object value) {
+		this.map.put(column, value);
+	}
+
+	/**
+	 * Update the value at a column.
+	 * 
+	 * @param column The column to update.
+	 * @param value  The new value.
+	 */
+	public void setColumn(String column, Object value) {
+		this.map.put(column, value);
+	}
+	
+	/**
 	 * Update the database with the local cache.
 	 * 
 	 * </p>
-	 * In order for {@link #update()} to work correctly, there must be a uuid
-	 * column in the databse that uniquely identifies the row that is being updated.
+	 * In order for {@link #update()} to work correctly, there must be a uuid column
+	 * in the databse that uniquely identifies the row that is being updated.
 	 * </p>
 	 * 
 	 * @throws SQLException If an exception occurs.
@@ -96,7 +131,7 @@ public class CachedRow implements Cache {
 
 		while (iterator.hasNext()) {
 			Map.Entry<String, Object> index = iterator.next();
-			keys = keys + index.getKey() + " = ?, ";
+			keys = keys + "`" + index.getKey() + "` = ?, ";
 		}
 
 		// Remove the extra ", "
@@ -106,7 +141,7 @@ public class CachedRow implements Cache {
 		String sql = "UPDATE `{1}` SET {2} WHERE {3};";
 		sql = sql.replace("{1}", table);
 		sql = sql.replace("{2}", keys);
-		sql = sql.replace("{3}", "`uuid` = " + map.get("uuid"));
+		sql = sql.replace("{3}", "`uuid` = '" + map.get("uuid") + "'");
 		PreparedStatement statement = connection.getConnection().prepareStatement(sql);
 
 		// Insert the values.
@@ -116,7 +151,7 @@ public class CachedRow implements Cache {
 			Map.Entry<String, Object> index = iterator.next();
 			statement.setObject(i, index.getValue());
 		}
-
+		
 		// Run the update.
 		connection.runUpdate(statement);
 	}

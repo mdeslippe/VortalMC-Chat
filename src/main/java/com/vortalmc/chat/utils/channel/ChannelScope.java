@@ -5,7 +5,7 @@ package com.vortalmc.chat.utils.channel;
  * 
  * <p>
  * These scops are used to define
- * {@link com.vortalmc.chat.utils.channel.AbstractChannel Channel} scopes.
+ * {@link com.vortalmc.chat.utils.channel.Channel Channel} scopes.
  * <p>
  * 
  * @author Myles Deslippe

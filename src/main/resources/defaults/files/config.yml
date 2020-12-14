@@ -5,23 +5,25 @@ MySQL:
   Password: admin
   Database: VortalMC-Chat
 Defaults:
+  Channel: global
+  Name-Color: '&7'
   Chat-Color: '&7'
-  Prefix: ''
-  Suffix: ''
-  Nickname: ''
+  Prefix: 'none'
+  Suffix: 'none'
+  Nickname: 'none'
 Channels:
   Global:
     Name: global
     Permission: vortalmcchat.channel.global
-    Format: '${PREFIX} ${NAME} ${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
   Staff:
-    Name: global
+    Name: staff
     Permission: vortalmcchat.channel.staff
-    Format: '&c&lSC ${NAME} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&c&lSC ${NICKNAME} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
   Local:
     Name: local
     Permission: vortalmcchat.channel.local
-    Format: '&c[L] &r${PREFIX} ${NAME} ${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&c[L] &r${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: local

@@ -1,7 +1,7 @@
 package com.vortalmc.chat.utils.channel;
 
 /**
- * The AbstractChannel class.
+ * The Channel class.
  * 
  * <p>
  * Extend this class to implement channels.
@@ -9,7 +9,7 @@ package com.vortalmc.chat.utils.channel;
  * 
  * @author Myles Deslippe
  */
-public class AbstractChannel {
+public class Channel {
 
 	/**
 	 * The channel's name.
@@ -44,7 +44,7 @@ public class AbstractChannel {
 	 * @param format     The format that will be used when a message is sent to the
 	 *                   channel.
 	 */
-	public AbstractChannel(String name, String permission, String format, String[] aliases, ChannelScope scope) {
+	public Channel(String name, String permission, String format, String[] aliases, ChannelScope scope) {
 		this.name = name;
 		this.permission = permission;
 		this.format = format;

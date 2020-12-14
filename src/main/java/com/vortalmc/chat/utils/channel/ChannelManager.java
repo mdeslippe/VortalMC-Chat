@@ -3,7 +3,7 @@ package com.vortalmc.chat.utils.channel;
 import java.util.HashMap;
 
 /**
- * A {@link com.vortalmc.chat.utils.channel.AbstractChannel Channel} management
+ * A {@link com.vortalmc.chat.utils.channel.Channel Channel} management
  * utility.
  * 
  * @author Myles Deslippe
@@ -13,13 +13,13 @@ public class ChannelManager {
 	/**
 	 * The regsitered channels.
 	 */
-	private HashMap<String, AbstractChannel> channels;
+	private HashMap<String, Channel> channels;
 
 	/**
 	 * Create a new channel manager.
 	 */
 	public ChannelManager() {
-		this.channels = new HashMap<String, AbstractChannel>();
+		this.channels = new HashMap<String, Channel>();
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class ChannelManager {
 	 * 
 	 * @return The channel.
 	 */
-	public AbstractChannel getChannel(String name) {
+	public Channel getChannel(String name) {
 		return this.channels.get(name.toLowerCase());
 	}
 
@@ -38,14 +38,14 @@ public class ChannelManager {
 	 * 
 	 * <p>
 	 * By default, the key to index the channel will be the channel
-	 * {@link com.vortalmc.chat.utils.channel.AbstractChannel#getName() name}. If
+	 * {@link com.vortalmc.chat.utils.channel.Channel#getName() name}. If
 	 * you wish to define a custom key, use
-	 * {@link #registerChannel(String, AbstractChannel)}.
+	 * {@link #registerChannel(String, Channel)}.
 	 * </p>
 	 * 
 	 * @param channel The channel to register.
 	 */
-	public void registerChannel(AbstractChannel channel) {
+	public void registerChannel(Channel channel) {
 		this.channels.put(channel.getName().toLowerCase(), channel);
 	}
 
@@ -55,7 +55,7 @@ public class ChannelManager {
 	 * @param key     The key to index the channel.
 	 * @param channel The channel to register.
 	 */
-	public void registerChannel(String key, AbstractChannel channel) {
+	public void registerChannel(String key, Channel channel) {
 		this.channels.put(key.toLowerCase(), channel);
 	}
 
@@ -86,7 +86,7 @@ public class ChannelManager {
 	 * 
 	 * @return The truth value assocated with the registration of the channel.
 	 */
-	public boolean containsChannel(AbstractChannel channel) {
+	public boolean containsChannel(Channel channel) {
 		return this.channels.containsValue(channel);
 	}
 
@@ -108,8 +108,8 @@ public class ChannelManager {
 	 * @return The map of registered channels.
 	 */
 	@SuppressWarnings("unchecked")
-	public HashMap<String, AbstractChannel> getChannels() {
-		return (HashMap<String, AbstractChannel>) this.channels.clone();
+	public HashMap<String, Channel> getChannels() {
+		return (HashMap<String, Channel>) this.channels.clone();
 	}
 
 }

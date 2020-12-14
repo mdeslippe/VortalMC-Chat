@@ -34,3 +34,6 @@ Events:
   Player-Leave:
     Leave-Message:
     - '&cVortal&7MC &8» &c${PLAYER} &7has left the server!'
+  Chat:
+    Mute-Message:
+    - '&cVortal&7MC &8» &7You are currently muted for &c${TIME_REMAINING}&7!'
