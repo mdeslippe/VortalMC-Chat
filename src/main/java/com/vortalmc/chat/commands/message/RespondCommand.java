@@ -35,26 +35,26 @@ public class RespondCommand extends CommandListener {
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
 		
+		Configuration config = VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration();
+		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+		
 		if (!(sender instanceof ProxiedPlayer)) {
 			sender.sendMessage(new TextComponent("Error: You muse be a player to use this command!"));
 			return;
 		}
 		
-		ProxiedPlayer player = (ProxiedPlayer) sender;
-		ProxiedPlayer target = null;
-		Configuration config = VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration();
-		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+		ProxiedPlayer player = (ProxiedPlayer) sender, target = null;
+		User user = User.fromProxiedPlayer(player);
 		ResponseMethod method = ResponseMethod.valueOf(config.getString("Messages.Response-Method").toUpperCase());
 		String uuid = null;
-		User user = User.fromProxiedPlayer(player);
-		
 		
 		switch (method) {
 		case LAST_MESSAGE_RECEIVER:
 			uuid = user.getLastMessageReceiver();
 			
 			if(uuid.equalsIgnoreCase("none")) {
-				this.displayNoPlayerDefinedMessage(player, method);
+				for(String index : messages.getStringList("Commands.Respond.Has-No-Last-Message-Receiver-Error"))
+					player.sendMessage(new TextComponent(Utils.translateColor(index)));
 				return;
 			}
 			
@@ -64,7 +64,8 @@ public class RespondCommand extends CommandListener {
 			uuid = user.getLastMessageSender();
 			
 			if(uuid.equalsIgnoreCase("none")) {
-				this.displayNoPlayerDefinedMessage(player, method);
+				for(String index : messages.getStringList("Commands.Respond.Has-No-Last-Message-Sender-Error"))
+					player.sendMessage(new TextComponent(Utils.translateColor(index)));
 				return;
 			}
 			
@@ -72,6 +73,7 @@ public class RespondCommand extends CommandListener {
 			break;
 		}
 		
+		// If the player is offline
 		if(target == null) {
 
 			JsonObject data = new Gson().fromJson(Utils.getMojangPlayerData(UUID.fromString(uuid)), JsonObject.class);
@@ -102,9 +104,9 @@ public class RespondCommand extends CommandListener {
 					));
 		
 		user.setLastMessageReceiver(target.getUniqueId());
-		targetUser.setLastMessageSender(((ProxiedPlayer) sender).getUniqueId());
+		targetUser.setLastMessageSender(player.getUniqueId());
 		
-		VortalMCChat.getInstance().getInternalEventManager().dispatchEvent(new MessageSentEvent((ProxiedPlayer) sender, target, message));
+		VortalMCChat.getInstance().getInternalEventManager().dispatchEvent(new MessageSentEvent(player, target, message));
 		
 	}
 
@@ -115,25 +117,4 @@ public class RespondCommand extends CommandListener {
 		for (String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 	}
-
-	private void displayNoPlayerDefinedMessage(ProxiedPlayer player, ResponseMethod method) {
-		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		switch(method) {
-		case LAST_MESSAGE_RECEIVER:
-			
-			for(String index : messages.getStringList("Commands.Respond.Has-No-Last-Message-Receiver-Error"))
-				player.sendMessage(new TextComponent(Utils.translateColor(index)));
-			
-			break;
-		case LAST_MESSAGE_SENDER:
-			
-			for(String index : messages.getStringList("Commands.Respond.Has-No-Last-Message-Sender-Error"))
-				player.sendMessage(new TextComponent(Utils.translateColor(index)));
-			
-			break;
-		}
-		
-	}
-	
 }

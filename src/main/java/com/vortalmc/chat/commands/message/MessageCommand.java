@@ -1,6 +1,5 @@
 package com.vortalmc.chat.commands.message;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import com.vortalmc.chat.VortalMCChat;
@@ -78,13 +77,9 @@ public class MessageCommand extends CommandListener {
 						.replace("${MESSAGE}", message))
 						));
 			
-			try {
-				sendingUser.updateColumn("last-message-receiver", target.getUniqueId().toString());
-				targetUser.updateColumn("last-message-sender", ((ProxiedPlayer) sender).getUniqueId().toString());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			
+				sendingUser.setLastMessageReceiver(target.getUniqueId());
+				targetUser.setLastMessageSender(((ProxiedPlayer) sender).getUniqueId());
+
 			VortalMCChat.getInstance().getInternalEventManager().dispatchEvent(new MessageSentEvent((ProxiedPlayer) sender, target, message));
 		}
 	}

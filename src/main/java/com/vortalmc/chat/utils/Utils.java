@@ -69,6 +69,18 @@ public class Utils {
 		return null;
 	}
 
+	/**
+	 * Query playerdata from the Mojang servers.
+	 * 
+	 * <p>
+	 * <strong>Note</strong> This will return null if the player does not exist or
+	 * the servers are offline.
+	 * </p>
+	 * 
+	 * @param uuid The uuid of the player to query.
+	 * 
+	 * @return The result of the query.
+	 */
 	public static String getMojangPlayerData(UUID uuid) {
 		
 		try {

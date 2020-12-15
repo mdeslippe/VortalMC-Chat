@@ -44,5 +44,4 @@ public class PlayerLeaveEvent implements Listener {
 		for (String index : messages.getStringList("Events.Player-Leave.Leave-Message"))
 			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName()))));
 	}
-
 }

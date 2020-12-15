@@ -30,10 +30,11 @@ Nickname:
   Aliases:
   - 'nick'
   Subcommands:
-    Name: ${PLAYER}
-    Permission: 'vortalmcchat.nickname.other'
-    Aliases: null
-    Subcommands: null
+    Other:
+      Name: ${PLAYER}
+      Permission: 'vortalmcchat.nickname.other'
+      Aliases: null
+      Subcommands: null
 Message:
   Name: 'message'
   Permission: 'vortalmcchat.message'
@@ -49,3 +50,28 @@ Respond:
   Permission: 'vortalmcchat.message'
   Aliases:
   - 'r'
+  Subcommands: null
+SocialSpy:
+  Name: 'socialspy'
+  Permission: 'vortalmcchat.socialspy'
+  Aliases:
+  - 'ss'
+  - 'sspy'
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.socialspy.other'
+      Aliases: null
+      Subcommands: null
+CommandSpy:
+  Name: 'commandspy'
+  Permission: 'vortalmcchat.commandspy'
+  Aliases:
+  - 'cs'
+  - 'cspy'
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.commandspy.other'
+      Aliases: null
+      Subcommands: null

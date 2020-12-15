@@ -36,7 +36,7 @@ Commands:
       Usage: 
       - '&cVortal&7MC &8» &7To chane a users nickname use &c/nickname <user> <nickname>&7!'
       Player-Not-Specified: 
-      - '&cVortal&7MC &8» &7Please specify the player whos nickname you want to change!'
+      - '&cVortal&7MC &8» &7Please specify the player who''s nickname you want to change!'
       Removed:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
       Updated:
@@ -57,6 +57,34 @@ Commands:
     - '&cVortal&7MC &8» &7You have not messaged anyone, please message someone before using &c/respond&7!'
     Has-No-Last-Message-Sender-Error:
     - '&cVortal&7MC &8» &7No one has messaged you, you have no one to respond to&7!'
+  SocialSpy:
+    Enabled:
+    - '&cVortal&7MC &8» &7You have enabled social spy!'
+    Disabled:
+    - '&cVortal&7MC &8» &7You have disabled social spy!'
+    Format:
+    - '&8[&c${SENDER} &8-> &c${RECEIVER}&8] &8» &7${MESSAGE}'
+    Other:
+      Player-Not-Specified:
+      - '&cVortal&7MC &8» &7Please specify the player who''s social spy you want to toggle!'
+      Enabled:
+      - '&cVortal&7MC &8» &7You have enabled social spy for &c${PLAYER}&7!'
+      Disabled:
+      - '&cVortal&7MC &8» &7You have disabled social spy for &c${PLAYER}&7!'
+  CommandSpy:
+    Enabled:
+    - '&cVortal&7MC &8» &7You have enabled command spy!'
+    Disabled:
+    - '&cVortal&7MC &8» &7You have disabled command spy!'
+    Format:
+    - '&cCommand&7Spy &8» &c${SENDER}&8: &7${COMMAND}'
+    Other:
+      Player-Not-Specified:
+      - '&cVortal&7MC &8» &7Please specify the player who''s command spy you want to toggle!'
+      Enabled:
+      - '&cVortal&7MC &8» &7You have enabled command spy for &c${PLAYER}&7!'
+      Disabled:
+      - '&cVortal&7MC &8» &7You have disabled command spy for &c${PLAYER}&7!'
 Events:
   Player-Join:
     First-Join-Message:

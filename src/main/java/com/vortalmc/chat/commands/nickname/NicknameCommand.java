@@ -1,9 +1,7 @@
 package com.vortalmc.chat.commands.nickname;
 
-import java.sql.SQLException;
-
 import com.vortalmc.chat.VortalMCChat;
-import com.vortalmc.chat.commands.nickname.subcommands.NicknameOfOtherPlayerCommand;
+import com.vortalmc.chat.commands.nickname.subcommands.NicknameOtherCommand;
 import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.command.CommandListener;
@@ -35,7 +33,7 @@ public class NicknameCommand extends CommandListener {
 
 		// Check if the user is trying to change another player's username.
 		if (args.length > 1) {
-			NicknameOfOtherPlayerCommand cmd = new NicknameOfOtherPlayerCommand();
+			NicknameOtherCommand cmd = new NicknameOtherCommand();
 
 			if (sender.hasPermission(cmd.getPermission()))
 				cmd.onCommand(sender, args);
@@ -57,13 +55,9 @@ public class NicknameCommand extends CommandListener {
 		} else if (args[0].equalsIgnoreCase("none") || args[0].equalsIgnoreCase("off")) {
 
 			ProxiedPlayer player = (ProxiedPlayer) sender;
+			
 			User user = User.fromProxiedPlayer(player);
-
-			try {
-				user.updateColumn("nickname", "none");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			user.removeNickname();
 
 			for (String index : messages.getStringList("Commands.Nickname.Removed"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
@@ -72,13 +66,9 @@ public class NicknameCommand extends CommandListener {
 		} else {
 
 			ProxiedPlayer player = (ProxiedPlayer) sender;
+			
 			User user = User.fromProxiedPlayer(player);
-
-			try {
-				user.updateColumn("nickname", args[0]);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			user.setNickname(args[0]);
 
 			for (String index : messages.getStringList("Commands.Nickname.Updated"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${NICKNAME}", args[0]))));

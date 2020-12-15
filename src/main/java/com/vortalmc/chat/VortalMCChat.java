@@ -7,12 +7,16 @@ import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
+import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
 import com.vortalmc.chat.commands.nickname.NicknameCommand;
+import com.vortalmc.chat.commands.socialspy.SocialSpyCommand;
 import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerLeaveEvent;
+import com.vortalmc.chat.events.custom.chat.MessageEvent;
+import com.vortalmc.chat.events.custom.command.CommandEvent;
 import com.vortalmc.chat.events.custom.connection.FirstJoinEvent;
 import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
@@ -23,7 +27,6 @@ import com.vortalmc.chat.utils.event.InternalEventManager;
 import com.vortalmc.chat.utils.file.ConfigurationFile;
 import com.vortalmc.chat.utils.file.FileManager;
 import com.vortalmc.chat.utils.misc.cache.CacheManager;
-import com.vortalmc.chat.utils.mysql.CachedRow;
 import com.vortalmc.chat.utils.mysql.SQLConnection;
 
 import litebans.api.Database;
@@ -259,6 +262,8 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerCommand(this, new NicknameCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new MessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new SocialSpyCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new CommandSpyCommand());
 	}
 
 	/**
@@ -273,6 +278,8 @@ public class VortalMCChat extends Plugin {
 
 		// Custom events.
 		this.getInternalEventManager().registerListener(new FirstJoinEvent());
+		this.getInternalEventManager().registerListener(new MessageEvent());
+		this.getInternalEventManager().registerListener(new CommandEvent());
 	}
 
 	/**
@@ -329,33 +336,33 @@ public class VortalMCChat extends Plugin {
 	 * @param message The message to dispatch.
 	 */
 	public void dispatchMessage(ProxiedPlayer player, String message) {
-		CachedRow row = (CachedRow) this.getCacheManager().getCache(player.getUniqueId());
-		Channel channel = this.getChannelManager().getChannel(row.getValue("channel").toString());
+		User user = User.fromProxiedPlayer(player);
+		Channel channel = this.getChannelManager().getChannel(user.getChatChannel());
 
 		if (player.hasPermission(channel.getPermission())) {
 
 			String format = channel.getFormat();
 
-			if (!row.getValue("prefix").toString().equalsIgnoreCase("none"))
-				format = format.replace("${PREFIX}", row.getValue("prefix").toString());
+			if (!user.getPrefix().equalsIgnoreCase("none"))
+				format = format.replace("${PREFIX}", user.getPrefix());
 			else
 				format = format.replace("${PREFIX}", "");
 
-			if (!row.getValue("suffix").toString().equalsIgnoreCase("none"))
-				format = format.replace("${SUFFIX}", row.getValue("suffix").toString());
+			if (!user.getSuffix().equalsIgnoreCase("none"))
+				format = format.replace("${SUFFIX}", user.getSuffix());
 			else
 				format = format.replace("${SUFFIX}", "");
 
-			if (!row.getValue("nickname").toString().equalsIgnoreCase("none"))
-				format = format.replace("${NICKNAME}", row.getValue("nickname").toString());
+			if (!user.getNickname().equalsIgnoreCase("none"))
+				format = format.replace("${NICKNAME}", user.getNickname());
 			else
 				format = format.replace("${NICKNAME}", "");
 
-			format = format.replace("${NAME_COLOR}", row.getValue("name-color").toString());
-			format = format.replace("${CHAT_COLOR}", row.getValue("chat-color").toString());
+			format = format.replace("${NAME_COLOR}", user.getNameColor());
+			format = format.replace("${CHAT_COLOR}", user.getChatColor());
 			format = format.replace("${USERNAME}", player.getName());
 			format = format.replace("${NAME}", player.getName());
-			format = format.replace("${DISPLAY_NAME}", User.fromProxiedPlayer(player).getsDisplayName());
+			format = format.replace("${DISPLAY_NAME}", user.getsDisplayName());
 			format = format.replace("${MESSAGE}", message);
 
 			for (ProxiedPlayer index : ProxyServer.getInstance().getPlayers())

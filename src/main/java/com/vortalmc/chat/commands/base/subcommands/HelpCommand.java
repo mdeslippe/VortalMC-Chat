@@ -17,10 +17,10 @@ public class HelpCommand extends CommandListener {
 
 	public HelpCommand() {
 		super(
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Help.Name"),
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Help.Permission"), 
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Help.Aliases").toArray(new String[0])
-		);
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Help.Name"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Help.Permission"), 
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Help.Aliases").toArray(new String[0])
+			);
 	}
 
 	@Override

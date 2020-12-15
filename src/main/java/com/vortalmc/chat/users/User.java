@@ -127,6 +127,13 @@ public class User {
 	}
 
 	/**
+	 * Set the User's chat channel to the default channel.
+	 */
+	public void resetChatChannel() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Channel"));
+	}
+
+	/**
 	 * Get the User's current chat color.
 	 * 
 	 * @return The User's current chat color.
@@ -143,7 +150,14 @@ public class User {
 	public void setChatColor(String color) {
 		this.getUserData().setColumn("chat-color", color);
 	}
-
+	
+	/**
+	 * Set the User's chat color to the default chat color.
+	 */
+	public void resetChatColor() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Chat-Color"));
+	}
+	
 	/**
 	 * Get the User's name color.
 	 * 
@@ -163,6 +177,13 @@ public class User {
 	}
 
 	/**
+	 * Set the User's name color to the default name color.
+	 */
+	public void resetNameColor() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Name-Color"));
+	}
+	
+	/**
 	 * Get the User's prefix.
 	 * 
 	 * @return The User's prefix.
@@ -181,6 +202,20 @@ public class User {
 	}
 
 	/**
+	 * Set the User's prefix to the default prefix.
+	 */
+	public void resetPrefix() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Prefix"));
+	}
+	
+	/**
+	 * Remove the User's prefix.
+	 */
+	public void removePrefix() {
+		this.setPrefix("none");
+	}
+	
+	/**
 	 * Get the User's suffix.
 	 * 
 	 * @return The User's suffix.
@@ -197,7 +232,21 @@ public class User {
 	public void setSuffix(String suffix) {
 		this.getUserData().setColumn("suffix", suffix);
 	}
-
+	
+	/**
+	 * Set the User's suffix to the default suffix.
+	 */
+	public void resetSuffix() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Suffix"));
+	}
+	
+	/**
+	 * Remove the User's suffix.
+	 */
+	public void removeSuffix() {
+		this.setSuffix("none");
+	}
+	
 	/**
 	 * Get the User's nickname.
 	 * 
@@ -216,6 +265,20 @@ public class User {
 		this.getUserData().setColumn("nickname", nickname);
 	}
 
+	/**
+	 * Set the User's nickname to the default nickname.
+	 */
+	public void resetNickname() {
+		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Nickname"));
+	}
+	
+	/**
+	 * Remove the User's nickname.
+	 */
+	public void removeNickname() {
+		this.setNickname("none");
+	}
+	
 	/**
 	 * Get the UUID of the player who lasted messaged the User.
 	 * 
@@ -362,7 +425,15 @@ public class User {
 	public CachedRow getUserData() {
 		if (this.dataIsCached())
 			return this.getUserDataFromCache();
-
+		
+		if(!this.isInDatabase()) {
+			try {
+				this.addUserToDatabase();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		VortalMCChat.getInstance().getCacheManager().addCache(uuid, this.getUserDataFromDatabase());
 		return this.getUserDataFromCache();
 	}
@@ -400,7 +471,8 @@ public class User {
 	public CachedRow getUserDataFromDatabase() {
 
 		try {
-			PreparedStatement statement = VortalMCChat.getInstance().getMySQLConnection().getConnection().prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
+			PreparedStatement statement = VortalMCChat.getInstance().getMySQLConnection().getConnection()
+					.prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
 			statement.setString(1, this.getUUID().toString());
 			ResultSet results = VortalMCChat.getInstance().getMySQLConnection().runQuery(statement);
 
@@ -493,7 +565,8 @@ public class User {
 	 */
 	public boolean isInDatabase() {
 		try {
-			PreparedStatement statement = VortalMCChat.getInstance().getMySQLConnection().getConnection().prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
+			PreparedStatement statement = VortalMCChat.getInstance().getMySQLConnection().getConnection()
+					.prepareStatement("SELECT * FROM `VortalMC-Chat` WHERE `uuid` = ?");
 			statement.setString(1, this.getUUID().toString());
 			ResultSet results = VortalMCChat.getInstance().getMySQLConnection().runQuery(statement);
 			return results.next();
@@ -523,7 +596,7 @@ public class User {
 
 		if (this.isInDatabase()) {
 
-			if (VortalMCChat.getInstance().getCacheManager().containsCache(this.getUUID())) {
+			if (this.dataIsCached()) {
 				CachedRow row = this.getUserDataFromCache();
 				row.setColumn(column, value);
 			} else {
@@ -579,11 +652,10 @@ public class User {
 	 * @return The User's displayname.
 	 */
 	public String getsDisplayName() {
-		CachedRow row = (CachedRow) VortalMCChat.getInstance().getCacheManager().getCache(this.getUUID());
 		CachedDataManager data = Dependencies.getLuckPermsAPI().getUserManager().getUser(this.getUUID()).getCachedData();
 
-		String nickname = String.valueOf(row.getValue("nickname"));
-		String nameColor = String.valueOf(row.getValue("name-color"));
+		String nickname = String.valueOf(this.getNickname());
+		String nameColor = String.valueOf(this.getNameColor());
 		String prefix = data.getMetaData().getPrefix();
 		String suffix = data.getMetaData().getSuffix();
 		String username = player.getName();
