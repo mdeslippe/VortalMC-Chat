@@ -27,3 +27,5 @@ Channels:
     Permission: vortalmcchat.channel.local
     Format: '&c[L] &r${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: local
+Messages:
+  Response-Method: LAST_MESSAGE_SENDER

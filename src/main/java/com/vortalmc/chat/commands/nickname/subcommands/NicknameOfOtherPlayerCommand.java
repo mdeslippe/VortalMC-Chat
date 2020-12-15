@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.vortalmc.chat.VortalMCChat;
+import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.command.CommandListener;
 
@@ -56,8 +57,10 @@ public class NicknameOfOtherPlayerCommand extends CommandListener {
 
 			UUID uuid = UUID.fromString(Utils.formatUUID(new Gson().fromJson(response, JsonObject.class).get("id").getAsString()));
 
+			User user = User.fromUUID(uuid);
+			
 			// Check if th player has joined the server before.
-			if (!VortalMCChat.getInstance().playerHasJoinedBefore(uuid)) {
+			if (!user.isInDatabase()) {
 				for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
 					sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
 				
@@ -65,7 +68,7 @@ public class NicknameOfOtherPlayerCommand extends CommandListener {
 			} else if (args[1].equalsIgnoreCase("off") || args[1].equalsIgnoreCase("none")) {
 
 				try {
-					VortalMCChat.getInstance().updatePlayerColumn(uuid, "nickname", "none");
+					user.updateColumn("nickname", "none");
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -77,7 +80,7 @@ public class NicknameOfOtherPlayerCommand extends CommandListener {
 			} else {
 
 				try {
-					VortalMCChat.getInstance().updatePlayerColumn(uuid, "nickname", args[1]);
+					user.updateColumn("nickname", args[1]);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 
 import com.vortalmc.chat.VortalMCChat;
 import com.vortalmc.chat.commands.nickname.subcommands.NicknameOfOtherPlayerCommand;
+import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.command.CommandListener;
 
@@ -56,9 +57,10 @@ public class NicknameCommand extends CommandListener {
 		} else if (args[0].equalsIgnoreCase("none") || args[0].equalsIgnoreCase("off")) {
 
 			ProxiedPlayer player = (ProxiedPlayer) sender;
+			User user = User.fromProxiedPlayer(player);
 
 			try {
-				VortalMCChat.getInstance().updatePlayerColumn(player.getUniqueId(), "nickname", "none");
+				user.updateColumn("nickname", "none");
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -70,9 +72,10 @@ public class NicknameCommand extends CommandListener {
 		} else {
 
 			ProxiedPlayer player = (ProxiedPlayer) sender;
+			User user = User.fromProxiedPlayer(player);
 
 			try {
-				VortalMCChat.getInstance().updatePlayerColumn(player.getUniqueId(), "nickname", args[0]);
+				user.updateColumn("nickname", args[0]);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

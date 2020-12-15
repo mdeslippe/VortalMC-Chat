@@ -34,3 +34,18 @@ Nickname:
     Permission: 'vortalmcchat.nickname.other'
     Aliases: null
     Subcommands: null
+Message:
+  Name: 'message'
+  Permission: 'vortalmcchat.message'
+  Aliases:
+  - 'msg'
+  - 'pm'
+  - 'dm'
+  - 'whisper'
+  - 'tell'
+  Subcommands: null
+Respond:
+  Name: 'respond'
+  Permission: 'vortalmcchat.message'
+  Aliases:
+  - 'r'

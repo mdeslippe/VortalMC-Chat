@@ -1,12 +1,12 @@
 package com.vortalmc.chat.events.bungee.connection;
 
 import com.vortalmc.chat.VortalMCChat;
+import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.mysql.CachedRow;
 
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.config.Configuration;
@@ -26,9 +26,12 @@ public class PlayerLeaveEvent implements Listener {
 	 */
 	@EventHandler
 	public void onDisconnect(PlayerDisconnectEvent event) {
+		
+		User user = User.fromProxiedPlayer(event.getPlayer());
+		
 		try {
-			if (VortalMCChat.getInstance().getCacheManager().containsCache(event.getPlayer().getUniqueId())) {
-				CachedRow row = (CachedRow) VortalMCChat.getInstance().getCacheManager().getCache(event.getPlayer().getUniqueId());
+			if (user.dataIsCached()) {
+				CachedRow row = user.getUserData();
 				row.push();
 				VortalMCChat.getInstance().getCacheManager().removeCache(row);
 			}
@@ -36,18 +39,10 @@ public class PlayerLeaveEvent implements Listener {
 			e.printStackTrace();
 		}
 
-		this.displayLeaveMessage(event.getPlayer());
-	}
-
-	/**
-	 * Display the leave message.
-	 * 
-	 * @param player The player that is leaving the server.
-	 */
-	private void displayLeaveMessage(ProxiedPlayer player) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Events.Player-Leave.Leave-Message"))
-			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", player.getName()))));
+			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName()))));
 	}
+
 }

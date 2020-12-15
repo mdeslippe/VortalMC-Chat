@@ -5,8 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import com.vortalmc.chat.utils.time.TimeUnit;
+import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -28,109 +27,6 @@ public class Utils {
 	 */
 	public static BaseComponent[] translateColor(final String message) {
 		return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
-	}
-
-	/**
-	 * Check if an array contains an element.
-	 * 
-	 * @param array   The array to check.
-	 * @param element The element to check for.
-	 * @return The truth value associated with the array containing the element.
-	 */
-	public static boolean checkIfArrayContainsElement(Object[] array, Object element) {
-		for (Object index : array)
-			if (index == element)
-				return true;
-
-		return false;
-	}
-
-	/**
-	 * Turn a timestamp into its string representation.
-	 * 
-	 * @param stamp The timestamp to convert.
-	 * 
-	 * @return The string representation of the timestamp.
-	 */
-	public static String timeStampToString(long stamp) {
-
-		String str = "";
-		long buffer;
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.DECADES);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "decades");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.YEARS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "years");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.MONTHS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "months");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.WEEKS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "weeks");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.DAYS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "days");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.HOURS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "hours");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.MINUTES);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "minutes");
-
-		buffer = millisecondsToUnit(stamp, TimeUnit.SECONDS);
-		if (buffer > 0)
-			appendTimeFormat(str, buffer + "seconds");
-
-		return str;
-	}
-
-	/**
-	 * Appent a time string.
-	 */
-	private static String appendTimeFormat(String format, String str) {
-		if (format != "")
-			return " " + format;
-		else
-			return format;
-	}
-
-	/**
-	 * Convert milliseconds to other time units.
-	 * 
-	 * @param ms   The amount of time in milliseconds.
-	 * @param unit The time unit to convert to.
-	 * 
-	 * @return The converted time.
-	 */
-	public static long millisecondsToUnit(long ms, TimeUnit unit) {
-		switch (unit) {
-		case SECONDS:
-			return ms / 1000L;
-		case MINUTES:
-			return ms / 60000L;
-		case HOURS:
-			return ms / 3600000L;
-		case DAYS:
-			return ms / 86400000L;
-		case WEEKS:
-			return ms / 604800000L;
-		case MONTHS:
-			return ms / 2629746000L;
-		case YEARS:
-			return ms / 31536000000L;
-		case DECADES:
-			return ms / 315360000000L;
-		default:
-			return -1;
-		}
 	}
 
 	/**
@@ -173,6 +69,34 @@ public class Utils {
 		return null;
 	}
 
+	public static String getMojangPlayerData(UUID uuid) {
+		
+		try {
+			String payload = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString();
+
+			HttpURLConnection con = (HttpURLConnection) new URL(payload).openConnection();
+			con.setRequestMethod("GET");
+
+			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) { // success
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+
+				while ((inputLine = in.readLine()) != null)
+					response.append(inputLine);
+
+				in.close();
+				con = null;
+
+				return response.toString();
+			}
+		} catch (IOException e) {
+			return null;
+		}
+		return null;
+		
+	}
+	
 	/**
 	 * Format a hyphenless UUID.
 	 * 

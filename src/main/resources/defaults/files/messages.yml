@@ -41,6 +41,22 @@ Commands:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
       Updated:
       - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &c${NICKNAME}&7!'
+  Message:
+    Usage:
+    - '&cVortal&7MC &8» &7To send a message use &c/message <user> <message>&7!'
+    Send-Format:
+    - '&8[&cMe &8-> &c${RECEIVER}&8] &8» &7${MESSAGE}'
+    Receive-Format:
+    - '&8[&c${SENDER} &8-> &cMe&8] &8» &7${MESSAGE}'
+    No-Message-Entered:
+    - '&cVortal&7MC &8» &7Please enter the message you wish to send!'
+    Player-Not-Found:
+    - '&cVortal&7MC &8» &7The player &c${PLAYER} &7is not online!'
+  Respond:
+    Has-No-Last-Message-Receiver-Error:
+    - '&cVortal&7MC &8» &7You have not messaged anyone, please message someone before using &c/respond&7!'
+    Has-No-Last-Message-Sender-Error:
+    - '&cVortal&7MC &8» &7No one has messaged you, you have no one to respond to&7!'
 Events:
   Player-Join:
     First-Join-Message:
@@ -52,4 +68,4 @@ Events:
     - '&cVortal&7MC &8» &c${PLAYER} &7has left the server!'
 Error:
   Player-Does-Not-Exist:
-  - '&cVortal&7MC &8» &7The player, &c${PLAYER} &7does not exist.'
+  - '&cVortal&7MC &8» &7The player &c${PLAYER} &7does not exist.'
