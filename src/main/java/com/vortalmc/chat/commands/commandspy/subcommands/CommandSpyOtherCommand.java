@@ -13,6 +13,15 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
+/**
+ * The VortalMC-Chat command spy command.
+ * 
+ * <p>
+ * This class is specifically dedicated to toggling commandspy for other users.
+ * </p>
+ * 
+ * @author Myles Deslippe
+ */
 public class CommandSpyOtherCommand extends CommandListener {
 
 	public CommandSpyOtherCommand() {
@@ -25,50 +34,52 @@ public class CommandSpyOtherCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		String response = Utils.getMojangPlayerData(args[0]);
-		
-		if(response == null) {
-			
-			for(String index : messages.getStringList("Error.Player-Does-Not-Exist"))
+		String mojangPlayerData = Utils.getMojangPlayerData(args[0]);
+
+		// Check if the target is a valid minecraft account.
+		if (mojangPlayerData == null) {
+
+			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
 			return;
 		}
-		
-		UUID uuid = UUID.fromString(Utils.formatUUID(new Gson().fromJson(response, JsonObject.class).get("id").getAsString()));
+
+		UUID uuid = UUID.fromString(
+				Utils.formatUUID(new Gson().fromJson(mojangPlayerData, JsonObject.class).get("id").getAsString()));
 		User target = User.fromUUID(uuid);
-		
+
+		// Check if the target is in the database.
 		if (!target.isInDatabase()) {
-			for(String index : messages.getStringList("Error.Player-Does-Not-Exist"))
+			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
+
 			return;
 		}
-		
-		if(target.hasCommandSpyEnabled()) {
-			
+
+		// Toogle their command spy.
+		if (target.hasCommandSpyEnabled()) {
+
 			target.disableCommandSpy();
-			
-			for(String index : messages.getStringList("Commands.CommandSpy.Other.Disabled"))
+
+			for (String index : messages.getStringList("Commands.CommandSpy.Other.Disabled"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
+
 		} else {
-			
+
 			target.enableCommandSpy();
-			
-			for(String index : messages.getStringList("Commands.CommandSpy.Other.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));	
+
+			for (String index : messages.getStringList("Commands.CommandSpy.Other.Enabled"))
+				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
 		}
 	}
 
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		for(String index : messages.getStringList("Error.Permission-Denied"))
+
+		for (String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 	}
 

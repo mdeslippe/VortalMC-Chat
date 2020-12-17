@@ -11,10 +11,11 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import com.vortalmc.chat.VortalMCChat;
-import com.vortalmc.chat.VortalMCChat.Dependencies;
+import com.vortalmc.chat.users.meta.MetaManager;
 import com.vortalmc.chat.utils.mysql.CachedRow;
 
-import net.luckperms.api.cacheddata.CachedDataManager;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
@@ -39,6 +40,11 @@ public class User {
 	private UUID uuid;
 
 	/**
+	 * The User's MetaManager.
+	 */
+	private final MetaManager metaManager;
+
+	/**
 	 * Create a new User.
 	 * 
 	 * @param player The {@linkplain net.md_5.bungee.api.connection.ProxiedPlayer
@@ -48,6 +54,7 @@ public class User {
 
 		this.player = player;
 		this.uuid = player.getUniqueId();
+		this.metaManager = new MetaManager(this);
 
 	}
 
@@ -59,6 +66,7 @@ public class User {
 	protected User(UUID uuid) {
 		this.player = VortalMCChat.getInstance().getProxy().getPlayer(uuid);
 		this.uuid = uuid;
+		this.metaManager = new MetaManager(this);
 	}
 
 	/**
@@ -108,6 +116,10 @@ public class User {
 		return this.uuid;
 	}
 
+	public MetaManager getMeta() {
+		return this.metaManager;
+	}
+
 	/**
 	 * Get the User's current chat channel.
 	 * 
@@ -133,152 +145,6 @@ public class User {
 		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Channel"));
 	}
 
-	/**
-	 * Get the User's current chat color.
-	 * 
-	 * @return The User's current chat color.
-	 */
-	public String getChatColor() {
-		return this.getUserData().getValue("chat-color").toString();
-	}
-
-	/**
-	 * Set the User's chat color.
-	 * 
-	 * @param color The User's new chat color.
-	 */
-	public void setChatColor(String color) {
-		this.getUserData().setColumn("chat-color", color);
-	}
-	
-	/**
-	 * Set the User's chat color to the default chat color.
-	 */
-	public void resetChatColor() {
-		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Chat-Color"));
-	}
-	
-	/**
-	 * Get the User's name color.
-	 * 
-	 * @return The User's name color.
-	 */
-	public String getNameColor() {
-		return this.getUserData().getValue("name-color").toString();
-	}
-
-	/**
-	 * Set the User's name color.
-	 * 
-	 * @param color The User's new name color.
-	 */
-	public void setNameColor(String color) {
-		this.getUserData().setColumn("name-color", color);
-	}
-
-	/**
-	 * Set the User's name color to the default name color.
-	 */
-	public void resetNameColor() {
-		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Name-Color"));
-	}
-	
-	/**
-	 * Get the User's prefix.
-	 * 
-	 * @return The User's prefix.
-	 */
-	public String getPrefix() {
-		return this.getUserData().getValue("prefix").toString();
-	}
-
-	/**
-	 * Set the User's prefix.
-	 * 
-	 * @param prefix The User's new prefix.
-	 */
-	public void setPrefix(String prefix) {
-		this.getUserData().setColumn("prefix", prefix);
-	}
-
-	/**
-	 * Set the User's prefix to the default prefix.
-	 */
-	public void resetPrefix() {
-		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Prefix"));
-	}
-	
-	/**
-	 * Remove the User's prefix.
-	 */
-	public void removePrefix() {
-		this.setPrefix("none");
-	}
-	
-	/**
-	 * Get the User's suffix.
-	 * 
-	 * @return The User's suffix.
-	 */
-	public String getSuffix() {
-		return this.getUserData().getValue("suffix").toString();
-	}
-
-	/**
-	 * Set the User's suffix.
-	 * 
-	 * @param suffix The User's new suffix.
-	 */
-	public void setSuffix(String suffix) {
-		this.getUserData().setColumn("suffix", suffix);
-	}
-	
-	/**
-	 * Set the User's suffix to the default suffix.
-	 */
-	public void resetSuffix() {
-		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Suffix"));
-	}
-	
-	/**
-	 * Remove the User's suffix.
-	 */
-	public void removeSuffix() {
-		this.setSuffix("none");
-	}
-	
-	/**
-	 * Get the User's nickname.
-	 * 
-	 * @return The User's nickname.
-	 */
-	public String getNickname() {
-		return this.getUserData().getValue("nickname").toString();
-	}
-
-	/**
-	 * Set the User's nickname.
-	 * 
-	 * @param nickname The User's new nickname.
-	 */
-	public void setNickname(String nickname) {
-		this.getUserData().setColumn("nickname", nickname);
-	}
-
-	/**
-	 * Set the User's nickname to the default nickname.
-	 */
-	public void resetNickname() {
-		this.setChatChannel(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Nickname"));
-	}
-	
-	/**
-	 * Remove the User's nickname.
-	 */
-	public void removeNickname() {
-		this.setNickname("none");
-	}
-	
 	/**
 	 * Get the UUID of the player who lasted messaged the User.
 	 * 
@@ -307,6 +173,15 @@ public class User {
 	}
 
 	/**
+	 * Check if the User has been messaged before.
+	 * 
+	 * @return The truth value associated with the User being messaged before.
+	 */
+	public boolean hasLastMessageSender() {
+		return !this.getLastMessageSender().equalsIgnoreCase("none");
+	}
+
+	/**
 	 * Get the player who the User last messaged's UUID.
 	 * 
 	 * @return The player who the User last messaged's UUID.
@@ -331,6 +206,15 @@ public class User {
 	 */
 	public void setLastMessageReceiver(UUID receiver) {
 		this.getUserData().setColumn("last-message-receiver", receiver.toString());
+	}
+
+	/**
+	 * Check if the User has been messaged anyone before..
+	 * 
+	 * @return The truth value associated with the User messaged someone before.
+	 */
+	public boolean hasLastMessageReceiver() {
+		return !this.getLastMessageReceiver().equalsIgnoreCase("none");
 	}
 
 	/**
@@ -425,21 +309,21 @@ public class User {
 	public CachedRow getUserData() {
 		if (this.dataIsCached())
 			return this.getUserDataFromCache();
-		
-		if(!this.isInDatabase()) {
+
+		if (!this.isInDatabase()) {
 			try {
 				this.addUserToDatabase();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		VortalMCChat.getInstance().getCacheManager().addCache(uuid, this.getUserDataFromDatabase());
 		return this.getUserDataFromCache();
 	}
 
 	/**
-	 * Strictly get the User's data from <strong>cache</strong>
+	 * Strictly get the User's data from <strong>cache</strong>.
 	 * 
 	 * <p>
 	 * Note: If the User's data is not currently cached, this will return null. <br>
@@ -453,7 +337,7 @@ public class User {
 	}
 
 	/**
-	 * Strictly get the User's data from the <strong>database</strong>
+	 * Strictly get the User's data from the <strong>database</strong>.
 	 * 
 	 * <p>
 	 * This data will not always match the cached data. The cached data is always up
@@ -647,33 +531,115 @@ public class User {
 	}
 
 	/**
-	 * Get the User's displayname.
+	 * Get the User who's username or nickname best matches the partial name.
 	 * 
-	 * @return The User's displayname.
+	 * <p>
+	 * <strong>Note</strong> This will return null if there are no users online, or
+	 * no players matched the partial name.
+	 * </p>
+	 * 
+	 * @param name The partial name to match.
+	 * 
+	 * @return The best possible match to the partial name.
 	 */
-	public String getsDisplayName() {
-		CachedDataManager data = Dependencies.getLuckPermsAPI().getUserManager().getUser(this.getUUID()).getCachedData();
+	public static User fromPartialName(String name) {
 
-		String nickname = String.valueOf(this.getNickname());
-		String nameColor = String.valueOf(this.getNameColor());
-		String prefix = data.getMetaData().getPrefix();
-		String suffix = data.getMetaData().getSuffix();
-		String username = player.getName();
+		if (ProxyServer.getInstance().getPlayer(name) != null)
+			return User.fromProxiedPlayer(ProxyServer.getInstance().getPlayer(name));
 
-		String buffer = "";
+		ProxiedPlayer bestMatchingPlayer = null;
+		int amountOfMatchingDigits = 0;
 
-		if (prefix != null)
-			buffer = buffer + "&r" + prefix + " ";
+		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
 
-		if (!nickname.equalsIgnoreCase("none"))
-			buffer = buffer + nameColor + nickname + " ";
+			int nameMatchCount = getAmountOfMatchingDigitsInARow(player.getName(), ChatColor.stripColor(name));
+			int nickMatchCount = getAmountOfMatchingDigitsInARow(
+					ChatColor.stripColor(User.fromProxiedPlayer(player).getMeta().getNickname()),
+					ChatColor.stripColor(name));
+
+			if (nameMatchCount > amountOfMatchingDigits) {
+				amountOfMatchingDigits = nameMatchCount;
+				bestMatchingPlayer = player;
+			}
+
+			if (nickMatchCount > amountOfMatchingDigits && User.fromProxiedPlayer(player).getMeta().hasNickname()) {
+				amountOfMatchingDigits = nickMatchCount;
+				bestMatchingPlayer = player;
+			}
+		}
+
+		if (bestMatchingPlayer == null)
+			return null;
 		else
-			buffer = buffer + nameColor + username + " ";
+			return User.fromProxiedPlayer(bestMatchingPlayer);
+	}
 
-		if (suffix != null)
-			buffer = buffer + "&r" + suffix + " ";
+	/**
+	 * Get the User who's =nickname best matches the partial name.
+	 * 
+	 * <p>
+	 * <strong>Note</strong> This will return null if there are no users online, or
+	 * no players matched the partial name.
+	 * </p>
+	 * 
+	 * @param name The partial name to match.
+	 * 
+	 * @return The best possible match to the partial name.
+	 */
+	public static User fromPartialNickname(String nickname) {
+		ProxiedPlayer bestMatchingPlayer = null;
+		int amountOfMatchingDigits = 0;
 
-		return buffer.substring(0, buffer.length() - 1);
+		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+			int nickMatchCount = getAmountOfMatchingDigitsInARow(
+					ChatColor.stripColor(User.fromProxiedPlayer(player).getMeta().getNickname()),
+					ChatColor.stripColor(nickname));
+
+			if (nickMatchCount > amountOfMatchingDigits && User.fromProxiedPlayer(player).getMeta().hasNickname()) {
+				amountOfMatchingDigits = nickMatchCount;
+				bestMatchingPlayer = player;
+			}
+
+		}
+
+		if (bestMatchingPlayer == null)
+			return null;
+		else
+			return User.fromProxiedPlayer(bestMatchingPlayer);
+	}
+
+	/**
+	 * Get the highest amount of consecutive digits in a string, that match another
+	 * string.
+	 * 
+	 * @param str    The string to search in.
+	 * @param target The string to search for.
+	 * 
+	 * @return The highest amount consecutive digits in the target string that are
+	 *         consecutive in the str string.
+	 */
+	private static int getAmountOfMatchingDigitsInARow(String str, String target) {
+
+		char[] str1 = str.toLowerCase().toCharArray(), str2 = target.toLowerCase().toCharArray();
+
+		int topMatchCount = 0, buffer = 0;
+
+		for (int i = 0; i <= str.length() - 1; i++) {
+
+			if (buffer >= str2.length)
+				return buffer;
+
+			if (str1[i] == str2[buffer]) {
+				buffer++;
+			} else if (buffer > topMatchCount) {
+				topMatchCount = buffer;
+				buffer = 0;
+			} else {
+				buffer = 0;
+			}
+		}
+
+		return topMatchCount;
 	}
 
 }

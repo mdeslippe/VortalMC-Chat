@@ -26,9 +26,9 @@ public class PlayerLeaveEvent implements Listener {
 	 */
 	@EventHandler
 	public void onDisconnect(PlayerDisconnectEvent event) {
-		
+
 		User user = User.fromProxiedPlayer(event.getPlayer());
-		
+
 		try {
 			if (user.dataIsCached()) {
 				CachedRow row = user.getUserData();

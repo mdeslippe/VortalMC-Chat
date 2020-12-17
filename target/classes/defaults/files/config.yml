@@ -29,3 +29,45 @@ Channels:
     Scope: local
 Messages:
   Response-Method: LAST_MESSAGE_SENDER
+Nickname:
+  Minimum-Length: 3
+  Maximum-Length: 25
+  Forbidden-Text:
+  - '.'
+  - ','
+  - ''''
+  - '"'
+  - '^'
+  - '-'
+  - '~'
+  - '&0'
+Prefix:
+  Minimum-Length: 3
+  Maximum-Length: 25
+  Forbidden-Text:
+  - '.'
+  - ','
+  - ''''
+  - '"'
+  - '^'
+  - '-'
+  - '~'
+  - '&0'
+Suffix:
+  Minimum-Length: 3
+  Maximum-Length: 25
+  Forbidden-Text:
+  - '.'
+  - ','
+  - ''''
+  - '"'
+  - '^'
+  - '-'
+  - '~'
+  - '&0'
+Name-Color:
+  Forbidden-Colors:
+  - '&0'
+Chat-Color:
+  Forbidden-Colors:
+  - '&0'

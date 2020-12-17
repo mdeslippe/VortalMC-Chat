@@ -11,14 +11,17 @@ import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
 import com.vortalmc.chat.commands.nickname.NicknameCommand;
+import com.vortalmc.chat.commands.realname.RealNameCommand;
 import com.vortalmc.chat.commands.socialspy.SocialSpyCommand;
 import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
+import com.vortalmc.chat.events.bungee.chat.TabCompletionEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerLeaveEvent;
 import com.vortalmc.chat.events.custom.chat.MessageEvent;
 import com.vortalmc.chat.events.custom.command.CommandEvent;
 import com.vortalmc.chat.events.custom.connection.FirstJoinEvent;
 import com.vortalmc.chat.users.User;
+import com.vortalmc.chat.users.meta.MetaValidator;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.channel.Channel;
 import com.vortalmc.chat.utils.channel.ChannelManager;
@@ -72,7 +75,12 @@ public class VortalMCChat extends Plugin {
 	 * ChannelManager}.
 	 */
 	private ChannelManager channelManager;
-
+	
+	/**
+	 * VortalMC-Chat's {@link com.vortalmc.chat.users.meta.MetaValidator MetaValidator}.
+	 */
+	private MetaValidator metaValidator;
+	
 	/**
 	 * Called when the plugin is enabled.
 	 */
@@ -83,13 +91,15 @@ public class VortalMCChat extends Plugin {
 		this.cacheManager = new CacheManager();
 		this.internalEventManager = new InternalEventManager();
 		this.channelManager = new ChannelManager();
-
+		
 		this.loadFiles();
 		this.initMySQL();
 		this.registerCommands();
 		this.registerEvents();
 		this.registerChannels();
-
+		
+		this.metaValidator = new MetaValidator(this);
+		
 	}
 
 	/**
@@ -97,6 +107,8 @@ public class VortalMCChat extends Plugin {
 	 */
 	public void onDisable() {
 
+		this.metaValidator = null;
+		
 		this.disconnectFromMySQL();
 		this.getProxy().getPluginManager().unregisterCommands(this);
 		this.getProxy().getPluginManager().unregisterListeners(this);
@@ -180,6 +192,14 @@ public class VortalMCChat extends Plugin {
 	}
 
 	/**
+	 * Get the {@link com.vortalmc.chat.users.meta.MetaValidator MetaValidator}.
+	 * @return
+	 */
+	public MetaValidator getMetaValidator() {
+		return this.metaValidator;
+	}
+	
+	/**
 	 * Load all of the configuration files.
 	 */
 	private void loadFiles() {
@@ -187,11 +207,13 @@ public class VortalMCChat extends Plugin {
 			this.getFileManager().regsiterFile("config", new ConfigurationFile(this.getDataFolder() + "/config/config.yml"));
 			this.getFileManager().regsiterFile("messages", new ConfigurationFile(this.getDataFolder() + "/config/messages.yml"));
 			this.getFileManager().regsiterFile("commands", new ConfigurationFile(this.getDataFolder() + "/config/commands.yml"));
-
+			this.getFileManager().regsiterFile("permissions", new ConfigurationFile(this.getDataFolder() + "/config/permissions.yml"));
+			
 			this.getFileManager().getFile("config").setDefaults(this.getResource("defaults/files/config.yml"));
 			this.getFileManager().getFile("messages").setDefaults(this.getResource("defaults/files/messages.yml"));
 			this.getFileManager().getFile("commands").setDefaults(this.getResource("defaults/files/commands.yml"));
-
+			this.getFileManager().getFile("permissions").setDefaults(this.getResource("defaults/files/permissions.yml"));
+			
 			this.getFileManager().loadAllFiles();
 		} catch (IOException e) {
 			this.getLogger().warning("Error: Could not load all of the configuration files, disabling the plugin!");
@@ -260,6 +282,7 @@ public class VortalMCChat extends Plugin {
 	private void registerCommands() {
 		this.getProxy().getPluginManager().registerCommand(this, new VortalMCChatCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new NicknameCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new RealNameCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new MessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new SocialSpyCommand());
@@ -275,6 +298,7 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerListener(this, new PlayerJoinEvent());
 		this.getProxy().getPluginManager().registerListener(this, new PlayerLeaveEvent());
 		this.getProxy().getPluginManager().registerListener(this, new PlayerChatEvent());
+		this.getProxy().getPluginManager().registerListener(this, new TabCompletionEvent());
 
 		// Custom events.
 		this.getInternalEventManager().registerListener(new FirstJoinEvent());
@@ -343,26 +367,26 @@ public class VortalMCChat extends Plugin {
 
 			String format = channel.getFormat();
 
-			if (!user.getPrefix().equalsIgnoreCase("none"))
-				format = format.replace("${PREFIX}", user.getPrefix());
+			if (!user.getMeta().getPrefix().equalsIgnoreCase("none"))
+				format = format.replace("${PREFIX}", user.getMeta().getPrefix());
 			else
 				format = format.replace("${PREFIX}", "");
 
-			if (!user.getSuffix().equalsIgnoreCase("none"))
-				format = format.replace("${SUFFIX}", user.getSuffix());
+			if (!user.getMeta().getSuffix().equalsIgnoreCase("none"))
+				format = format.replace("${SUFFIX}", user.getMeta().getSuffix());
 			else
 				format = format.replace("${SUFFIX}", "");
 
-			if (!user.getNickname().equalsIgnoreCase("none"))
-				format = format.replace("${NICKNAME}", user.getNickname());
+			if (!user.getMeta().getNickname().equalsIgnoreCase("none"))
+				format = format.replace("${NICKNAME}", user.getMeta().getNickname());
 			else
 				format = format.replace("${NICKNAME}", "");
 
-			format = format.replace("${NAME_COLOR}", user.getNameColor());
-			format = format.replace("${CHAT_COLOR}", user.getChatColor());
+			format = format.replace("${NAME_COLOR}", user.getMeta().getNameColor());
+			format = format.replace("${CHAT_COLOR}", user.getMeta().getChatColor());
 			format = format.replace("${USERNAME}", player.getName());
 			format = format.replace("${NAME}", player.getName());
-			format = format.replace("${DISPLAY_NAME}", user.getsDisplayName());
+			format = format.replace("${DISPLAY_NAME}", user.getMeta().getsDisplayName());
 			format = format.replace("${MESSAGE}", message);
 
 			for (ProxiedPlayer index : ProxyServer.getInstance().getPlayers())

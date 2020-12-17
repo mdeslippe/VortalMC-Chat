@@ -23,14 +23,14 @@ public class MessageEvent implements Listener {
 
 	@EventHandler
 	public void onMessage(MessageSentEvent event) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-			
-			if(event.getReceiver() == player || event.getSender() == player)
+
+			if (event.getReceiver() == player || event.getSender() == player)
 				continue;
-			
+
 			User user = User.fromProxiedPlayer(player);
 
 			if (user.hasSocialSpyEnabled()) {

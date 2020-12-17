@@ -17,10 +17,10 @@ public class ReloadCommand extends CommandListener {
 
 	public ReloadCommand() {
 		super(
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Name"),
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Permission"), 
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Reload.Aliases").toArray(new String[0])
-		);
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Name"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Subcommands.Reload.Permission"), 
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Subcommands.Reload.Aliases").toArray(new String[0])
+			);
 	}
 
 	@Override

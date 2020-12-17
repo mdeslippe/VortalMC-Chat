@@ -13,6 +13,15 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
+/**
+ * The VortalMC-Chat social spy command.
+ * 
+ * <p>
+ * This class is specifically dedicated to toggling socialspy for other users.
+ * </p>
+ * 
+ * @author Myles Deslippe
+ */
 public class SocialSpyOtherCommand extends CommandListener {
 
 	public SocialSpyOtherCommand() {
@@ -25,50 +34,49 @@ public class SocialSpyOtherCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
 		String response = Utils.getMojangPlayerData(args[0]);
-		
-		if(response == null) {
-			
-			for(String index : messages.getStringList("Error.Player-Does-Not-Exist"))
+
+		if (response == null) {
+
+			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
+
 			return;
 		}
-		
+
 		UUID uuid = UUID.fromString(Utils.formatUUID(new Gson().fromJson(response, JsonObject.class).get("id").getAsString()));
 		User target = User.fromUUID(uuid);
-		
+
 		if (!target.isInDatabase()) {
-			for(String index : messages.getStringList("Error.Player-Does-Not-Exist"))
+			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
+
 			return;
 		}
-		
-		if(target.hasSocialSpyEnabled()) {
-			
+
+		if (target.hasSocialSpyEnabled()) {
+
 			target.disableSocialSpy();
-			
-			for(String index : messages.getStringList("Commands.SocialSpy.Other.Disabled"))
+
+			for (String index : messages.getStringList("Commands.SocialSpy.Other.Disabled"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
-			
+
 		} else {
-			
+
 			target.enableSocialSpy();
-			
-			for(String index : messages.getStringList("Commands.SocialSpy.Other.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));	
+
+			for (String index : messages.getStringList("Commands.SocialSpy.Other.Enabled"))
+				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
 		}
 	}
 
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		for(String index : messages.getStringList("Error.Permission-Denied"))
+
+		for (String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 	}
 

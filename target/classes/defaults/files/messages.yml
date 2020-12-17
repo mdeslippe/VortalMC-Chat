@@ -27,23 +27,40 @@ Commands:
           Sub-Commands: null
   Nickname:
     Usage:
-    - '&cVortal&7MC &8» &7To change your nickname use &c/nickname <nickname>&7!'
+    - '&cVortal&7MC &8» &7Usage: &c/nickname <nickname>&7!'
     Updated:
     - '&cVortal&7MC &8» &7You have changed your nickname to &c${NICKNAME}&7!'
     Removed:
     - '&cVortal&7MC &8» &7You have removed your nickname!'
+    Nickname-In-Use:
+    - '&cVortal&7MC &8» &7That nickname is already in use!'
+    Nickname-Cannot-Be-Player-Name:
+    - '&cVortal&7MC &8» &7You cannot use a player''s name as your nickname!'
+    Forbidden-Character:
+    - '&cVortal&7MC &8» &7You are not allowed to use &8''&c${CHARACTER}&8'' &7in a nickname!'
+    Nickname-Too-Big:
+    - '&cVortal&7MC &8» &7The nickname &c${NICKNAME} &7is too large, please enter a nickname under &c${MAXSIZE} &7characters!'
+    Nickname-Too-Small:
+    - '&cVortal&7MC &8» &7The nickname &c${NICKNAME} &7is too small, please enter a nickname over &c${MINSIZE} &7characters!'
     Other:
       Usage: 
-      - '&cVortal&7MC &8» &7To chane a users nickname use &c/nickname <user> <nickname>&7!'
+      - '&cVortal&7MC &8» &7Usage: &c/nickname <user> <nickname>&7!'
       Player-Not-Specified: 
       - '&cVortal&7MC &8» &7Please specify the player who''s nickname you want to change!'
       Removed:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
       Updated:
       - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &c${NICKNAME}&7!'
+  Realname:
+    Usage:
+    - '&cVortal&7MC &8» &7Usage &c/realname <nickname>&7!'
+    Format:
+    - '&cVortal&7MC &8» &c${NICKNAME}&7''s real name is &c${PLAYER}&7!'
+    Player-Not-Found:
+    - '&cVortal&7MC &8» &7No user is online with the nickname &c${NICKNAME}&7!'
   Message:
     Usage:
-    - '&cVortal&7MC &8» &7To send a message use &c/message <user> <message>&7!'
+    - '&cVortal&7MC &8» &7Usage: &c/message <user> <message>&7!'
     Send-Format:
     - '&8[&cMe &8-> &c${RECEIVER}&8] &8» &7${MESSAGE}'
     Receive-Format:

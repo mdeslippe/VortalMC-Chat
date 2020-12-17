@@ -20,10 +20,11 @@ public class VortalMCChatCommand extends CommandListener {
 	
 	public VortalMCChatCommand() {
 		super(
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Name"),
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Permission"), 
-		VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Aliases").toArray(new String[0])
-		);
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Name"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("VortalMCChat.Permission"), 
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("VortalMCChat.Aliases").toArray(new String[0])
+			);
+		
 		this.addSubCommandListener(new HelpCommand());
 		this.addSubCommandListener(new VersionCommand());
 		this.addSubCommandListener(new ReloadCommand());

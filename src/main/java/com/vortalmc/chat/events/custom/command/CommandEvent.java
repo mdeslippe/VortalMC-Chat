@@ -23,10 +23,10 @@ public class CommandEvent implements Listener {
 
 	@EventHandler
 	public void onMessage(CommandExecutedEvent event) {
-		
-		if(!(event.getExecutor() instanceof ProxiedPlayer))
-				return;
-		
+
+		if (!(event.getExecutor() instanceof ProxiedPlayer))
+			return;
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		ProxiedPlayer executor = (ProxiedPlayer) event.getExecutor();
 

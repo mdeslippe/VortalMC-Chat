@@ -11,6 +11,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
+/**
+ * The VortalMC-Chat command spy command.
+ * 
+ * <p>
+ * This class is specifically dedicated to toggling commandspy for the executor.
+ * </p>
+ * 
+ * @author Myles Deslippe
+ */
 public class CommandSpyCommand extends CommandListener {
 
 	public CommandSpyCommand() {
@@ -23,46 +32,50 @@ public class CommandSpyCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		if(!(sender instanceof ProxiedPlayer)) {
+
+		// Check if the sender is a player.
+		if (!(sender instanceof ProxiedPlayer)) {
 			sender.sendMessage(new TextComponent("Error: You must be a player to use this command!"));
 			return;
 		}
-		
-		if(args.length > 0) {
+
+		// Check if the sender is trying to toggle command spy for another player.
+		if (args.length > 0) {
 			CommandSpyOtherCommand cmd = new CommandSpyOtherCommand();
-			
-			if(sender.hasPermission(cmd.getPermission()))
+
+			if (sender.hasPermission(cmd.getPermission()))
 				cmd.onCommand(sender, args);
 			else
 				cmd.onPermissionDenied(sender, args);
-			
+
 			return;
 		}
-		
+
 		User user = User.fromProxiedPlayer((ProxiedPlayer) sender);
-		
-		if(user.hasCommandSpyEnabled()) {
+
+		// Toggle the players commandspy.
+		if (user.hasCommandSpyEnabled()) {
 			user.disableCommandSpy();
-			
-			for(String index : messages.getStringList("Commands.CommandSpy.Disabled"))
+
+			for (String index : messages.getStringList("Commands.CommandSpy.Disabled"))
 				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
-			
+
 		} else {
-			user.enableCommandSpy();;
-			
-			for(String index : messages.getStringList("Commands.CommandSpy.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index)));	
-		}	
+			user.enableCommandSpy();
+			;
+
+			for (String index : messages.getStringList("Commands.CommandSpy.Enabled"))
+				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+		}
 	}
 
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		for(String index : messages.getStringList("Error.Permission-Denied"))
+
+		for (String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
 	}
 }

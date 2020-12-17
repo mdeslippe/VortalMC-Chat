@@ -35,6 +35,13 @@ Nickname:
       Permission: 'vortalmcchat.nickname.other'
       Aliases: null
       Subcommands: null
+Realname:
+  Name: 'realname'
+  Permission: 'vortalmcchat.realname'
+  Aliases:
+  - 'getname'
+  - 'name'
+  Subcommands: null
 Message:
   Name: 'message'
   Permission: 'vortalmcchat.message'

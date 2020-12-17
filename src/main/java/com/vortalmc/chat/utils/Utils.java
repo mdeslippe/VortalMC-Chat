@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.UUID;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -25,8 +24,8 @@ public class Utils {
 	 * 
 	 * @return The translated String.
 	 */
-	public static BaseComponent[] translateColor(final String message) {
-		return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message));
+	public static TextComponent translateColor(final String message) {
+		return new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message)));
 	}
 
 	/**
@@ -82,7 +81,7 @@ public class Utils {
 	 * @return The result of the query.
 	 */
 	public static String getMojangPlayerData(UUID uuid) {
-		
+
 		try {
 			String payload = "https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString();
 
@@ -106,9 +105,9 @@ public class Utils {
 			return null;
 		}
 		return null;
-		
+
 	}
-	
+
 	/**
 	 * Format a hyphenless UUID.
 	 * 
@@ -125,6 +124,17 @@ public class Utils {
 		sb = new StringBuilder(sb.toString());
 		sb.insert(23, "-");
 		return sb.toString();
+	}
+
+	/**
+	 * Strip the color codes off of a message.
+	 * 
+	 * @param message The message to strip.
+	 * 
+	 * @return The stripped message.
+	 */
+	public static String stripColorCodes(String message) {
+		return message.replaceAll("[&][a-f|A-F|0-9|K-R|k-r]", "");
 	}
 
 }
