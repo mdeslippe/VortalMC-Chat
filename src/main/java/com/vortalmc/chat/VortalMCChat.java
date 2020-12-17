@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
+import com.vortalmc.chat.commands.channel.ChannelCommand;
+import com.vortalmc.chat.commands.channel.ImplicitChannelCommand;
 import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
@@ -87,6 +91,7 @@ public class VortalMCChat extends Plugin {
 	@Override
 	public void onEnable() {
 		
+		// Be careful if you rearrange any method or constructor call.
 		this.fileManager = new FileManager(this);
 		this.cacheManager = new CacheManager();
 		this.internalEventManager = new InternalEventManager();
@@ -94,9 +99,9 @@ public class VortalMCChat extends Plugin {
 		
 		this.loadFiles();
 		this.initMySQL();
-		this.registerCommands();
 		this.registerEvents();
 		this.registerChannels();
+		this.registerCommands();
 		
 		this.metaValidator = new MetaValidator(this);
 		
@@ -106,7 +111,7 @@ public class VortalMCChat extends Plugin {
 	 * Called when the plugin is disabled.
 	 */
 	public void onDisable() {
-
+		
 		this.metaValidator = null;
 		
 		this.disconnectFromMySQL();
@@ -287,6 +292,12 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new SocialSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new CommandSpyCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new ChannelCommand());
+		
+		Iterator<Entry<String, Channel>> channels = this.getChannelManager().getChannels().entrySet().iterator();
+		while(channels.hasNext())
+			this.getProxy().getPluginManager().registerCommand(this, new ImplicitChannelCommand(channels.next().getValue()));
+		
 	}
 
 	/**
@@ -355,13 +366,32 @@ public class VortalMCChat extends Plugin {
 	 * <strong>Note</strong>: This will only broadcast the message to the channel
 	 * the player is in.
 	 * </p>
+	 * <p>
+	 * <strong>Note</strong>: This will only broadcast the message if the player has 
+	 * permission.
+	 * </p>
 	 * 
 	 * @param player  The player to dispatch the message as.
 	 * @param message The message to dispatch.
 	 */
 	public void dispatchMessage(ProxiedPlayer player, String message) {
+		VortalMCChat.getInstance().dispatchMessage(player, message, this.getChannelManager().getChannel(User.fromProxiedPlayer(player).getChatChannel()));
+	}
+	
+	/**
+	 * Dispatch a message as a player.
+	 * 
+	 * <p>
+	 * <strong>Note</strong>: This will only broadcast the message if the player has 
+	 * permission.
+	 * </p>
+	 * 
+	 * @param player  The player to dispatch the message as.
+	 * @param message The message to dispatch.
+	 * @param channel The channel to send the message in.
+	 */
+	public void dispatchMessage(ProxiedPlayer player, String message, Channel channel) {
 		User user = User.fromProxiedPlayer(player);
-		Channel channel = this.getChannelManager().getChannel(user.getChatChannel());
 
 		if (player.hasPermission(channel.getPermission())) {
 
@@ -390,12 +420,11 @@ public class VortalMCChat extends Plugin {
 			format = format.replace("${MESSAGE}", message);
 
 			for (ProxiedPlayer index : ProxyServer.getInstance().getPlayers())
-				if (index.hasPermission(channel.getPermission()))
-					index.sendMessage(new TextComponent(Utils.translateColor(format)));
-
+				if ((channel.getChannelScope() == ChannelScope.GLOBAL || index.getServer() == player.getServer()) && index.hasPermission(channel.getPermission()))
+						index.sendMessage(new TextComponent(Utils.translateColor(format)));
 		}
 	}
-
+	
 	/**
 	 * Get an internal resource.
 	 * 

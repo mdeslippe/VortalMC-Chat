@@ -17,16 +17,22 @@ Channels:
     Permission: vortalmcchat.channel.global
     Format: '${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
+    Aliases:
+    - 'g'
   Staff:
     Name: staff
     Permission: vortalmcchat.channel.staff
-    Format: '&c&lSC ${NICKNAME} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&c&lSC &7${NICKNAME} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
+    Aliases:
+    - 'sc'
   Local:
     Name: local
     Permission: vortalmcchat.channel.local
     Format: '&c[L] &r${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: local
+    Aliases:
+    - 'l'
 Messages:
   Response-Method: LAST_MESSAGE_SENDER
 Nickname:

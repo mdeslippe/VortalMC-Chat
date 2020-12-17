@@ -12,6 +12,7 @@ import java.util.UUID;
 
 import com.vortalmc.chat.VortalMCChat;
 import com.vortalmc.chat.users.meta.MetaManager;
+import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.mysql.CachedRow;
 
 import net.md_5.bungee.api.ChatColor;
@@ -551,18 +552,25 @@ public class User {
 		int amountOfMatchingDigits = 0;
 
 		for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-
+			
+			User user = User.fromProxiedPlayer(player);
+			
+			if(user.getMeta().hasNickname() && Utils.stripColorCodes(name).equalsIgnoreCase(Utils.stripColorCodes(user.getMeta().getNickname())))
+				return user;
+			
 			int nameMatchCount = getAmountOfMatchingDigitsInARow(player.getName(), ChatColor.stripColor(name));
 			int nickMatchCount = getAmountOfMatchingDigitsInARow(
-					ChatColor.stripColor(User.fromProxiedPlayer(player).getMeta().getNickname()),
-					ChatColor.stripColor(name));
+					ChatColor.stripColor(user.getMeta().getNickname()),
+					ChatColor.stripColor(name)
+					);
 
 			if (nameMatchCount > amountOfMatchingDigits) {
 				amountOfMatchingDigits = nameMatchCount;
 				bestMatchingPlayer = player;
 			}
 
-			if (nickMatchCount > amountOfMatchingDigits && User.fromProxiedPlayer(player).getMeta().hasNickname()) {
+			if (nickMatchCount > amountOfMatchingDigits && user.getMeta().hasNickname()) {
+				
 				amountOfMatchingDigits = nickMatchCount;
 				bestMatchingPlayer = player;
 			}
@@ -587,6 +595,7 @@ public class User {
 	 * @return The best possible match to the partial name.
 	 */
 	public static User fromPartialNickname(String nickname) {
+		
 		ProxiedPlayer bestMatchingPlayer = null;
 		int amountOfMatchingDigits = 0;
 

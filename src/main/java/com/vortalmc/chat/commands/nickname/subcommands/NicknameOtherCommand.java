@@ -52,8 +52,7 @@ public class NicknameOtherCommand extends CommandListener {
 		}
 
 		// Load player from the mojang player data.
-		UUID uuid = UUID.fromString(
-				Utils.formatUUID(new Gson().fromJson(mojangPlayerData, JsonObject.class).get("id").getAsString()));
+		UUID uuid = UUID.fromString(Utils.formatUUID(new Gson().fromJson(mojangPlayerData, JsonObject.class).get("id").getAsString()));
 		User target = User.fromUUID(uuid);
 
 		// Check if the player has joined the server before.

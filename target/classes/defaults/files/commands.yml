@@ -10,20 +10,27 @@ VortalMCChat:
       Name: 'help'
       Permission: 'vortalmcchat.help'
       Aliases: []
-      Subcommands: null
     Version:
       Name: 'version'
       Permission: 'vortalmcchat.version'
       Aliases:
       - 'ver'
       - 'v'
-      Subcommands: null
     Reload:
       Name: 'reload'
       Permission: 'vortalmcchat.reload'
       Aliases:
       - 'rl'
-      Subcommands: null
+Channel:
+  Name: 'channel'
+  Permission: 'vortalmcchat.channel.change'
+  Aliases:
+  - 'chan'
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.channel.change.other'
+      Aliases: null 
 Nickname:
   Name: 'nickname'
   Permission: 'vortalmcchat.nickname'
@@ -34,14 +41,12 @@ Nickname:
       Name: ${PLAYER}
       Permission: 'vortalmcchat.nickname.other'
       Aliases: null
-      Subcommands: null
 Realname:
   Name: 'realname'
   Permission: 'vortalmcchat.realname'
   Aliases:
   - 'getname'
   - 'name'
-  Subcommands: null
 Message:
   Name: 'message'
   Permission: 'vortalmcchat.message'
@@ -51,13 +56,11 @@ Message:
   - 'dm'
   - 'whisper'
   - 'tell'
-  Subcommands: null
 Respond:
   Name: 'respond'
   Permission: 'vortalmcchat.message'
   Aliases:
   - 'r'
-  Subcommands: null
 SocialSpy:
   Name: 'socialspy'
   Permission: 'vortalmcchat.socialspy'
@@ -69,7 +72,6 @@ SocialSpy:
       Name: '${PLAYER}'
       Permission: 'vortalmcchat.socialspy.other'
       Aliases: null
-      Subcommands: null
 CommandSpy:
   Name: 'commandspy'
   Permission: 'vortalmcchat.commandspy'
@@ -81,4 +83,3 @@ CommandSpy:
       Name: '${PLAYER}'
       Permission: 'vortalmcchat.commandspy.other'
       Aliases: null
-      Subcommands: null
