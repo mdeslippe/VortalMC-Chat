@@ -37,11 +37,15 @@ public class RespondCommand extends CommandListener {
 		Configuration config = VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration();
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
+		// Check to make sure the command sender was a player.
 		if (!(sender instanceof ProxiedPlayer)) {
+			
 			sender.sendMessage(new TextComponent("Error: You muse be a player to use this command!"));
+
 			return;
 		}
 
+		// Define variables.
 		ProxiedPlayer player = (ProxiedPlayer) sender, target = null;
 		User messager = User.fromProxiedPlayer(player);
 		ResponseMethod method = ResponseMethod.valueOf(config.getString("Messages.Response-Method").toUpperCase());
@@ -49,6 +53,8 @@ public class RespondCommand extends CommandListener {
 		String validationBuffer = null;
 		String type = "none";
 
+		// Get choose the message recipeant bast on the method defined in the
+		// configuration file.
 		switch (method) {
 		case LAST_MESSAGE_RECEIVER:
 			validationBuffer = messager.getLastMessageReceiver();
@@ -57,29 +63,34 @@ public class RespondCommand extends CommandListener {
 		case LAST_MESSAGE_SENDER:
 			validationBuffer = messager.getLastMessageSender();
 			type = "Sender";
+			break;
 		}
 
 		// Check if there is a player to respond to.
 		if (validationBuffer.equalsIgnoreCase("none")) {
+			
 			for (String index : messages.getStringList("Commands.Respond.Has-No-Last-Message-" + type + "-Error"))
-				player.sendMessage(new TextComponent(Utils.translateColor(index)));
+				player.sendMessage(Utils.translateColor(index));
+
 			return;
 		}
-
+		
+		// Define the ProxiedPlayer target variable.
 		target = ProxyServer.getInstance().getPlayer(UUID.fromString(validationBuffer));
 
-		// If the player is offline
+		// If the player is offline.
 		if (target == null) {
 
 			JsonObject data = new Gson().fromJson(Utils.getMojangPlayerData(UUID.fromString(validationBuffer)),JsonObject.class);
 
 			for (String index : messages.getStringList("Commands.Message.Player-Not-Found"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", data.get("name").getAsString()))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", data.get("name").getAsString())));
+
 			return;
 		}
 
+		// Create the response.
 		String[] buffer = new String[args.length + 1];
-
 		buffer[0] = User.fromProxiedPlayer(target).getAsProxiedPlayer().getName();
 
 		for (int i = 0; i <= args.length - 1; i++)
@@ -94,6 +105,6 @@ public class RespondCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

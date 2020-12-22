@@ -37,12 +37,15 @@ public class SocialSpyCommand extends CommandListener {
 
 		// Check to make sure the sender is a player.
 		if (!(sender instanceof ProxiedPlayer)) {
+			
 			sender.sendMessage(new TextComponent("Error: You must be a player to use this command!"));
+			
 			return;
 		}
 
 		// Check to see if the sender is trying to toggle social spy for another player.
 		if (args.length > 0) {
+			
 			SocialSpyOtherCommand cmd = new SocialSpyOtherCommand();
 
 			if (sender.hasPermission(cmd.getPermission()))
@@ -58,16 +61,18 @@ public class SocialSpyCommand extends CommandListener {
 
 		// Toggle the User's social spy.
 		if (user.hasSocialSpyEnabled()) {
+			
 			user.disableSocialSpy();
 
 			for (String index : messages.getStringList("Commands.SocialSpy.Disabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+				sender.sendMessage(Utils.translateColor(index));
 
 		} else {
+			
 			user.enableSocialSpy();
 
 			for (String index : messages.getStringList("Commands.SocialSpy.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+				sender.sendMessage(Utils.translateColor(index));
 		}
 	}
 
@@ -76,6 +81,6 @@ public class SocialSpyCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

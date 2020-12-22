@@ -7,7 +7,6 @@ import com.vortalmc.chat.utils.event.Listener;
 import com.vortalmc.chat.utils.event.defined.PlayerFirstJoinEvent;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
 /**
@@ -29,6 +28,6 @@ public class FirstJoinEvent implements Listener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Events.Player-Join.First-Join-Message"))
-			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName()))));
+			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 	}
 }

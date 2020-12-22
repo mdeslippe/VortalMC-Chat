@@ -5,7 +5,6 @@ import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.config.Configuration;
@@ -26,12 +25,13 @@ public class PlayerJoinEvent implements Listener {
 	@EventHandler
 	public void connected(ServerConnectedEvent event) {
 
-		// This will load the User's data into cache.
+		// Load the User's data into cache.
 		User.fromProxiedPlayer(event.getPlayer()).getUserData();
 
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
+		// Display the player join message.
 		for (String index : messages.getStringList("Events.Player-Join.Join-Message"))
-			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName()))));
+			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 	}
 }

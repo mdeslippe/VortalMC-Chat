@@ -15,7 +15,6 @@ import com.vortalmc.chat.utils.command.CommandListener;
 import com.vortalmc.chat.utils.message.MessageBuilder;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
 /**
@@ -40,14 +39,21 @@ public class NicknameOtherCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
+
 		Configuration config = VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration();
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+
+		// Attempt to get the target's player data from mojang.
 		String mojangPlayerData = Utils.getMojangPlayerData(args[0]);
 
-		// If there was no response.
+		// If the response is null, that implies the player does not exist, or the
+		// authentication servers are offline. In either case the nickname will not be
+		// updated.
 		if (mojangPlayerData == null) {
+			
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
+
 			return;
 		}
 
@@ -57,79 +63,90 @@ public class NicknameOtherCommand extends CommandListener {
 
 		// Check if the player has joined the server before.
 		if (!target.isInDatabase()) {
+			
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 
-			// Check if the sender is trying to remove the player's nickname
-		} else if (args[1].equalsIgnoreCase("off") || args[1].equalsIgnoreCase("none")) {
+			return;
+		}
+
+		// Check if the sender is trying to remove the player's nickname
+		if (args[1].equalsIgnoreCase("off") || args[1].equalsIgnoreCase("none")) {
 
 			target.getMeta().removeNickname();
 
 			for (String index : messages.getStringList("Commands.Nickname.Other.Removed"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 
-			// Change the player's nickname.
-		} else {
+			return;
+		}
 
-			try {
-				VortalMCChat.getInstance().getMetaValidator().validateNickname(args[1]);
-			} catch (ForbiddenTextException e) {
-				for (String msg : messages.getStringList("Commands.Nickname.Forbidden-Character")) {
+		// Validate the nickname.
+		try {
+			
+			VortalMCChat.getInstance().getMetaValidator().validateNickname(args[1]);
+			
+		} catch (ForbiddenTextException e) {
 
-					MessageBuilder buffer = new MessageBuilder(msg);
-					buffer.replace("${CHARACTER}", e.getText(), false);
+			for (String msg : messages.getStringList("Commands.Nickname.Forbidden-Character")) {
 
-					sender.sendMessage(buffer.build());
-				}
+				MessageBuilder buffer = new MessageBuilder(msg);
+				buffer.replace("${CHARACTER}", e.getText(), false);
 
-				return;
-			} catch (NicknameInUseException e) {
-				for (String index : messages.getStringList("Commands.Nickname.Nickname-In-Use"))
-					sender.sendMessage(Utils.translateColor(index));
-				return;
-			} catch (LengthException e) {
-				switch (e.getType()) {
-				case TOO_BIG:
-					for (String index : messages.getStringList("Commands.Nickname.Nickname-Too-Big")) {
-
-						MessageBuilder msg = new MessageBuilder(index);
-						msg.replace("{SIZE}", String.valueOf(e.getLength()), true);
-						msg.replace("${NICKNAME}", args[1], false);
-						msg.replace("${MAXSIZE}", String.valueOf(config.getInt("Nickname.Maximum-Length")), true);
-						msg.replace("${MINSIZE}", String.valueOf(config.getInt("Nickname.Minimum-Length")), true);
-
-						sender.sendMessage(msg.build());
-					}
-					return;
-				case TOO_SMALL:
-					for (String index : messages.getStringList("Commands.Nickname.Nickname-Too-Small")) {
-
-						MessageBuilder msg = new MessageBuilder(index);
-						msg.replace("{SIZE}", String.valueOf(e.getLength()), true);
-						msg.replace("${NICKNAME}", args[1], false);
-						msg.replace("${MAXSIZE}", String.valueOf(config.getInt("Nickname.Maximum-Length")), true);
-						msg.replace("${MINSIZE}", String.valueOf(config.getInt("Nickname.Minimum-Length")), true);
-
-						sender.sendMessage(msg.build());
-					}
-					return;
-				}
-			} catch (NicknameCannotBePlayerNameException e) {
-
-				if (!sender.getName().equalsIgnoreCase(Utils.stripColorCodes(e.getNickname()))) {
-
-					for (String index : messages.getStringList("Commands.Nickname.Nickname-Cannot-Be-Player-Name"))
-						sender.sendMessage(Utils.translateColor(index));
-					return;
-				}
+				sender.sendMessage(buffer.build());
 			}
 
-			target.getMeta().setNickname(args[1]);
+			return;
 
-			for (String index : messages.getStringList("Commands.Nickname.Other.Updated"))
-				sender.sendMessage(new TextComponent(
-						Utils.translateColor(index.replace("${NICKNAME}", args[1]).replace("${PLAYER}", args[0]))));
+		} catch (NicknameInUseException e) {
+
+			for (String index : messages.getStringList("Commands.Nickname.Nickname-In-Use"))
+				sender.sendMessage(Utils.translateColor(index));
+
+			return;
+
+		} catch (LengthException e) {
+
+			String path = "Commands.Nickname.";
+
+			switch (e.getType()) {
+			case TOO_BIG:
+				path += "Nickname-Too-Big";
+				break;
+			case TOO_SMALL:
+				path += "Nickname-Too-Small";
+				break;
+			}
+
+			for (String index : messages.getStringList(path)) {
+
+				MessageBuilder msg = new MessageBuilder(index);
+				msg.replace("{SIZE}", String.valueOf(e.getLength()), true);
+				msg.replace("${NICKNAME}", args[1], false);
+				msg.replace("${MAXSIZE}", String.valueOf(config.getInt("Nickname.Maximum-Length")), true);
+				msg.replace("${MINSIZE}", String.valueOf(config.getInt("Nickname.Minimum-Length")), true);
+
+				sender.sendMessage(msg.build());
+			}
+
+			return;
+
+		} catch (NicknameCannotBePlayerNameException e) {
+
+			if (!sender.getName().equalsIgnoreCase(Utils.stripColorCodes(e.getNickname()))) {
+
+				for (String index : messages.getStringList("Commands.Nickname.Nickname-Cannot-Be-Player-Name"))
+					sender.sendMessage(Utils.translateColor(index));
+
+				return;
+			}
 		}
+
+		// Update the nickname.
+		target.getMeta().setNickname(args[1]);
+
+		for (String index : messages.getStringList("Commands.Nickname.Other.Updated"))
+			sender.sendMessage(Utils.translateColor(index.replace("${NICKNAME}", args[1]).replace("${PLAYER}", args[0])));
 	}
 
 	@Override
@@ -137,6 +154,6 @@ public class NicknameOtherCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

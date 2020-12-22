@@ -32,20 +32,23 @@ public class MessageCommand extends CommandListener {
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
 
-		// Pull files.
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 		Configuration permissions = VortalMCChat.getInstance().getFileManager().getFile("permissions").getConfiguration();
 
 		// Ensure the sender is a ProxiedPlayer.
 		if (!(sender instanceof ProxiedPlayer)) {
+			
 			sender.sendMessage(new TextComponent("Error: You must be a player to execute this command!"));
+			
 			return;
 		}
 
 		// Ensure enough aruguments were specified.
 		if (args.length < 2) {
+			
 			for (String index : messages.getStringList("Commands.Message.Usage"))
 				sender.sendMessage(Utils.translateColor(index));
+			
 			return;
 		}
 
@@ -56,12 +59,14 @@ public class MessageCommand extends CommandListener {
 
 		// Ensure the target player exists.
 		if (receiver == null) {
+			
 			for (String index : messages.getStringList("Commands.Message.Player-Not-Found"))
 				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", Utils.stripColorCodes(args[0]))));
+			
 			return;
 		}
 
-		// Send message to sender.
+		// Send the message to the sender.
 		for (String index : messages.getStringList("Commands.Message.Send-Format")) {
 
 			MessageBuilder msg = new MessageBuilder(index);
@@ -73,7 +78,7 @@ public class MessageCommand extends CommandListener {
 			messager.getAsProxiedPlayer().sendMessage(msg.build());
 		}
 
-		// Send message to receiver.
+		// Send the message to the receiver.
 		for (String index : messages.getStringList("Commands.Message.Receive-Format")) {
 
 			MessageBuilder msg = new MessageBuilder(index);
@@ -81,11 +86,15 @@ public class MessageCommand extends CommandListener {
 			msg.replace("${SENDER}", messager.getMeta().getPreferedName(), true);
 			msg.replace("${RECEIVER}", receiver.getMeta().getPreferedName(), true);
 			msg.replace("${MESSAGE}", message, sender.hasPermission(permissions.getString("Color.Text")));
+			
 			receiver.getAsProxiedPlayer().sendMessage(msg.build());
 		}
 
+		// Update the player data.
 		messager.setLastMessageReceiver(receiver.getUUID());
 		receiver.setLastMessageSender(messager.getUUID());
+		
+		// Dispatch the internal MessageSentEvent.
 		VortalMCChat.getInstance().getInternalEventManager().dispatchEvent(new MessageSentEvent(messager.getAsProxiedPlayer(), receiver.getAsProxiedPlayer(), message));
 	}
 
@@ -94,6 +103,6 @@ public class MessageCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

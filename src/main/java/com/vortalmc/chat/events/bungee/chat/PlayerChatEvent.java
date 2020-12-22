@@ -25,10 +25,12 @@ public class PlayerChatEvent implements Listener {
 
 		// If the event was a command.
 		if (event.getMessage().startsWith("/") || event.isCancelled()) {
+			
 			VortalMCChat.getInstance().getInternalEventManager().dispatchEvent(new CommandExecutedEvent(event.getSender(), event.getMessage()));
+			
 		} else {
-			ProxiedPlayer player = (ProxiedPlayer) event.getSender();
-			VortalMCChat.getInstance().dispatchMessage(player, event.getMessage());
+			
+			VortalMCChat.getInstance().dispatchMessage((ProxiedPlayer) event.getSender(), event.getMessage());
 			event.setCancelled(true);
 		}
 	}

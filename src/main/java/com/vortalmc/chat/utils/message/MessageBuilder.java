@@ -20,6 +20,13 @@ public class MessageBuilder {
 
 	/**
 	 * Create a new MessageBuilder.
+	 */
+	public MessageBuilder() {
+		this.message = "";
+	}
+
+	/**
+	 * Create a new MessageBuilder.
 	 * 
 	 * @param message The message that is going to be formatted.
 	 */
@@ -28,18 +35,33 @@ public class MessageBuilder {
 	}
 
 	/**
+	 * Append the message that is being built.
+	 * 
+	 * @param message The message to add on.
+	 */
+	public void append(String message) {
+		this.message += message;
+	}
+
+	/**
 	 * Replace all occurrences of a string.
+	 * 
+	 * <p>
+	 * <strong>Note:</strong> If color translation is irrelevent (for example, a
+	 * placeholder is being replace by an integer), set the color paramater to false
+	 * for a slight performance gain.
+	 * </p>
 	 * 
 	 * @param target The target string to replace.
 	 * @param value  The value to replace the target.
 	 * @param color  If the replacement is going to be color formatted.
 	 */
-	public void replace(String target, String value, boolean color) {
+	public void replace(String target, Object value, boolean color) {
 
 		if (color)
-			message = message.replace(target, value);
+			message = message.replace(target, String.valueOf(value));
 		else
-			message = message.replace(target, value.replace("&", "\\&"));
+			message = message.replace(target, String.valueOf(value).replace("&", "\\&"));
 	}
 
 	/**
@@ -54,9 +76,9 @@ public class MessageBuilder {
 		int startPointer = 0, endPointer = 0;
 		String msgCopy = message;
 
-		while (message.contains("\\&")) {
-			locations.add(message.indexOf("\\&"));
-			message = message.replaceFirst("[\\\\][&]", "&");
+		while (msgCopy.contains("\\&")) {
+			locations.add(msgCopy.indexOf("\\&"));
+			msgCopy = msgCopy.replaceFirst("[\\\\][&]", "&");
 		}
 
 		try {
@@ -67,13 +89,13 @@ public class MessageBuilder {
 				endPointer = locations.get(i);
 
 				if (startPointer != endPointer) {
-					buffer.addExtra(Utils.translateColor(message.substring(startPointer, endPointer)));
+					buffer.addExtra(Utils.translateColor(msgCopy.substring(startPointer, endPointer)));
 					startPointer = endPointer;
 				}
 
 				endPointer += 2;
 
-				buffer.addExtra(new TextComponent(message.substring(startPointer, endPointer)));
+				buffer.addExtra(new TextComponent(msgCopy.substring(startPointer, endPointer)));
 
 				startPointer = endPointer;
 			}
@@ -83,7 +105,7 @@ public class MessageBuilder {
 		} catch (ArrayIndexOutOfBoundsException ex) {
 		}
 
-		if (endPointer != message.length())
+		if (endPointer != msgCopy.length())
 			buffer.addExtra(Utils.translateColor(msgCopy.substring(endPointer, msgCopy.length())));
 		return buffer;
 	}

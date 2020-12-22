@@ -22,7 +22,7 @@ Channels:
   Staff:
     Name: staff
     Permission: vortalmcchat.channel.staff
-    Format: '&c&lSC &7${NICKNAME} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&c&lSC &7${CHAT_COLOR}${NICKNAME} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
     Aliases:
     - 'sc'

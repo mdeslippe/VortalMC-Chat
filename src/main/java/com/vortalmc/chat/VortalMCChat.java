@@ -15,6 +15,7 @@ import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
 import com.vortalmc.chat.commands.nickname.NicknameCommand;
+import com.vortalmc.chat.commands.prefix.PrefixCommand;
 import com.vortalmc.chat.commands.realname.RealNameCommand;
 import com.vortalmc.chat.commands.socialspy.SocialSpyCommand;
 import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
@@ -40,7 +41,6 @@ import litebans.api.Database;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -287,6 +287,7 @@ public class VortalMCChat extends Plugin {
 	private void registerCommands() {
 		this.getProxy().getPluginManager().registerCommand(this, new VortalMCChatCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new NicknameCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new PrefixCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RealNameCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new MessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
@@ -325,10 +326,13 @@ public class VortalMCChat extends Plugin {
 
 		for (String index : config.getKeys()) {
 			this.getChannelManager().registerChannel(
-					new Channel(config.getString(index + ".Name"),
-					config.getString(index + ".Permission"), config.getString(index + ".Format"),
-					config.getStringList(index + ".Aliases").toArray(new String[0]),
-					ChannelScope.valueOf(config.getString(index + ".Scope").toUpperCase())));
+					new Channel(
+							config.getString(index + ".Name"),
+							config.getString(index + ".Permission"), config.getString(index + ".Format"),
+							config.getStringList(index + ".Aliases").toArray(new String[0]),
+							ChannelScope.valueOf(config.getString(index + ".Scope").toUpperCase())
+							)
+					);
 		}
 	}
 
@@ -398,19 +402,19 @@ public class VortalMCChat extends Plugin {
 			String format = channel.getFormat();
 
 			if (!user.getMeta().getPrefix().equalsIgnoreCase("none"))
-				format = format.replace("${PREFIX}", user.getMeta().getPrefix());
+				format = format.replace("${PREFIX}", user.getMeta().getPrefix() + " ");
 			else
 				format = format.replace("${PREFIX}", "");
 
 			if (!user.getMeta().getSuffix().equalsIgnoreCase("none"))
-				format = format.replace("${SUFFIX}", user.getMeta().getSuffix());
+				format = format.replace("${SUFFIX}", " " + user.getMeta().getSuffix());
 			else
 				format = format.replace("${SUFFIX}", "");
 
 			if (!user.getMeta().getNickname().equalsIgnoreCase("none"))
 				format = format.replace("${NICKNAME}", user.getMeta().getNickname());
 			else
-				format = format.replace("${NICKNAME}", "");
+				format = format.replace("${NICKNAME}", player.getName());
 
 			format = format.replace("${NAME_COLOR}", user.getMeta().getNameColor());
 			format = format.replace("${CHAT_COLOR}", user.getMeta().getChatColor());
@@ -421,7 +425,7 @@ public class VortalMCChat extends Plugin {
 
 			for (ProxiedPlayer index : ProxyServer.getInstance().getPlayers())
 				if ((channel.getChannelScope() == ChannelScope.GLOBAL || index.getServer() == player.getServer()) && index.hasPermission(channel.getPermission()))
-						index.sendMessage(new TextComponent(Utils.translateColor(format)));
+						index.sendMessage(Utils.translateColor(format));
 		}
 	}
 	

@@ -37,12 +37,15 @@ public class CommandSpyCommand extends CommandListener {
 
 		// Check if the sender is a player.
 		if (!(sender instanceof ProxiedPlayer)) {
+			
 			sender.sendMessage(new TextComponent("Error: You must be a player to use this command!"));
+
 			return;
 		}
 
 		// Check if the sender is trying to toggle command spy for another player.
 		if (args.length > 0) {
+			
 			CommandSpyOtherCommand cmd = new CommandSpyOtherCommand();
 
 			if (sender.hasPermission(cmd.getPermission()))
@@ -57,17 +60,18 @@ public class CommandSpyCommand extends CommandListener {
 
 		// Toggle the players commandspy.
 		if (user.hasCommandSpyEnabled()) {
+
 			user.disableCommandSpy();
 
 			for (String index : messages.getStringList("Commands.CommandSpy.Disabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+				sender.sendMessage(Utils.translateColor(index));
 
 		} else {
+
 			user.enableCommandSpy();
-			;
 
 			for (String index : messages.getStringList("Commands.CommandSpy.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+				sender.sendMessage(Utils.translateColor(index));
 		}
 	}
 
@@ -76,6 +80,6 @@ public class CommandSpyCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

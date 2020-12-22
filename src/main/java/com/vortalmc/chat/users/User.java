@@ -569,7 +569,7 @@ public class User {
 				bestMatchingPlayer = player;
 			}
 
-			if (nickMatchCount > amountOfMatchingDigits && user.getMeta().hasNickname()) {
+			if (nickMatchCount > amountOfMatchingDigits && !User.fromProxiedPlayer(player).getMeta().getNickname().equalsIgnoreCase("none")) {
 				
 				amountOfMatchingDigits = nickMatchCount;
 				bestMatchingPlayer = player;
@@ -604,7 +604,7 @@ public class User {
 					ChatColor.stripColor(User.fromProxiedPlayer(player).getMeta().getNickname()),
 					ChatColor.stripColor(nickname));
 
-			if (nickMatchCount > amountOfMatchingDigits && User.fromProxiedPlayer(player).getMeta().hasNickname()) {
+			if (nickMatchCount > amountOfMatchingDigits && !User.fromProxiedPlayer(player).getMeta().getNickname().equalsIgnoreCase("none")) {
 				amountOfMatchingDigits = nickMatchCount;
 				bestMatchingPlayer = player;
 			}

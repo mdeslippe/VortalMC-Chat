@@ -8,7 +8,6 @@ import com.vortalmc.chat.utils.event.Listener;
 import com.vortalmc.chat.utils.event.defined.CommandExecutedEvent;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
@@ -43,7 +42,7 @@ public class CommandEvent implements Listener {
 					index = index.replace("${SENDER}", executor.getName());
 					index = index.replace("${COMMAND}", event.getCommand());
 
-					player.sendMessage(new TextComponent(Utils.translateColor(index)));
+					player.sendMessage(Utils.translateColor(index));
 				}
 			}
 		}

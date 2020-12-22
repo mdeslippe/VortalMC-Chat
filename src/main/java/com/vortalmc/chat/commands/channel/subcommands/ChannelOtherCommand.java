@@ -1,8 +1,6 @@
 package com.vortalmc.chat.commands.channel.subcommands;
 
-import java.util.Iterator;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -14,9 +12,17 @@ import com.vortalmc.chat.utils.command.CommandListener;
 import com.vortalmc.chat.utils.message.MessageBuilder;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
+/**
+ * The VortalMC-Chat channel command.
+ * 
+ * <p>
+ * This class is specifically dedicated for changing other player's channels.
+ * </p>
+ * 
+ * @author Myles Deslippe
+ */
 public class ChannelOtherCommand extends CommandListener {
 
 	public ChannelOtherCommand() {
@@ -29,14 +35,20 @@ public class ChannelOtherCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+		
+		// Attempt to get the target's player data from mojang.
 		String mojangPlayerData = Utils.getMojangPlayerData(args[0]);
 
-		// If there was no response.
+		// If the response is null, that implies the player does not exist, or the
+		// authentication servers are offline. In either case the prefix will not be
+		// updated.
 		if (mojangPlayerData == null) {
+			
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
+			
 			return;
 		}
 
@@ -46,46 +58,45 @@ public class ChannelOtherCommand extends CommandListener {
 
 		// Check if the player has joined the server before.
 		if (!target.isInDatabase()) {
+			
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
+			
 			return;
 		}
-		
-		Iterator<Entry<String, Channel>> channels = VortalMCChat.getInstance().getChannelManager().getChannels().entrySet().iterator();
 
-		while (channels.hasNext()) {
+		// If the channel is found, update the target's channel.
+		if (VortalMCChat.getInstance().getChannelManager().containsChannel(args[1])) {
 
-			Entry<String, Channel> index = channels.next();
+			Channel channel = VortalMCChat.getInstance().getChannelManager().getChannel(args[1]);
+			target.setChatChannel(channel.getName());
 
-			if (args[1].equalsIgnoreCase(index.getKey())) {
-
-				target.setChatChannel(index.getKey());
-
-				for (String msgIndex : messages.getStringList("Commands.Channel.Other.Switched")) {
-					MessageBuilder msg = new MessageBuilder(msgIndex);
-					msg.replace("${CHANNEL}", index.getKey(), true);
-					msg.replace("${PLAYER}", args[0], true);
-					sender.sendMessage(msg.build());
-				}
-
-				return;
+			for (String msgIndex : messages.getStringList("Commands.Channel.Other.Switched")) {
+				MessageBuilder msg = new MessageBuilder(msgIndex);
+				msg.replace("${CHANNEL}", channel.getName(), true);
+				msg.replace("${PLAYER}", args[0], true);
+				sender.sendMessage(msg.build());
 			}
+			
+			return;
 		}
 
+		// If the channel was invalid, send an error message.
 		for (String index : messages.getStringList("Commands.Channel.Invalid-Channel")) {
 
 			MessageBuilder msg = new MessageBuilder(index);
 			msg.replace("${PLAYER}", args[0], true);
 			msg.replace("${CHANNEL}", args[1], true);
+			
 			sender.sendMessage(msg.build());
 		}
 	}
-	
+
 	@Override
 	public void onPermissionDenied(CommandSender sender, String[] args) {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
-		for(String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+
+		for (String index : messages.getStringList("Error.Permission-Denied"))
+			sender.sendMessage(Utils.translateColor(index));
 	}
 }

@@ -41,6 +41,24 @@ Nickname:
       Name: ${PLAYER}
       Permission: 'vortalmcchat.nickname.other'
       Aliases: null
+Prefix:
+  Name: 'prefix'
+  Permission: 'vortalmcchat.prefix'
+  Aliases: null
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.prefix.other'
+      Aliases: null
+Suffix:
+  Name: 'suffix'
+  Permission: 'vortalmcchat.suffix'
+  Aliases: null
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.suffix.other'
+      Aliases: null
 Realname:
   Name: 'realname'
   Permission: 'vortalmcchat.realname'

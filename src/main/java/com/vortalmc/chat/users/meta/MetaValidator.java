@@ -56,12 +56,19 @@ public class MetaValidator {
 	 * @param prefix The prefix to validate.
 	 * 
 	 * @throws ForbiddenTextException If forbidden text is found in the prefix.
+	 * @throws LengthException        If the prefix is too short or too long.
 	 */
-	public void validatePrefix(String prefix) throws ForbiddenTextException {
+	public void validatePrefix(String prefix) throws ForbiddenTextException, LengthException {
 
-		for (String index : config.getStringList("Prefix.Forbidden-Characters"))
+		for (String index : config.getStringList("Prefix.Forbidden-Text"))
 			if (prefix.contains(index) || Utils.stripColorCodes(prefix).contains(index))
 				throw new ForbiddenTextException(index);
+
+		if (prefix.length() < config.getInt("Prefix.Minimum-Length"))
+			throw new LengthException(prefix.length(), LengthExceptionType.TOO_SMALL);
+
+		if (prefix.length() > config.getInt("Prefix.Maximum-Length"))
+			throw new LengthException(prefix.length(), LengthExceptionType.TOO_BIG);
 	}
 
 	/**
@@ -70,11 +77,18 @@ public class MetaValidator {
 	 * @param suffix The suffix to validate.
 	 * 
 	 * @throws ForbiddenTextException If forbidden text is found in the suffix.
+	 * @throws LengthException        If the suffix is too short or too long.
 	 */
-	public void validateSuffix(String suffix) throws ForbiddenTextException {
-		for (String index : config.getStringList("Suffix.Forbidden-Characters"))
+	public void validateSuffix(String suffix) throws ForbiddenTextException, LengthException {
+		for (String index : config.getStringList("Suffix.Forbidden-Text"))
 			if (suffix.contains(index) || Utils.stripColorCodes(suffix).contains(index))
 				throw new ForbiddenTextException(index);
+
+		if (suffix.length() < config.getInt("Prefix.Minimum-Length"))
+			throw new LengthException(suffix.length(), LengthExceptionType.TOO_SMALL);
+
+		if (suffix.length() > config.getInt("Prefix.Maximum-Length"))
+			throw new LengthException(suffix.length(), LengthExceptionType.TOO_BIG);
 	}
 
 	/**
@@ -102,8 +116,7 @@ public class MetaValidator {
 			if (nickname.contains(index) || Utils.stripColorCodes(nickname).contains(index))
 				throw new ForbiddenTextException(index);
 
-		Iterator<Entry<Object, Cache>> iterator = VortalMCChat.getInstance().getCacheManager().getCache().entrySet()
-				.iterator();
+		Iterator<Entry<Object, Cache>> iterator = VortalMCChat.getInstance().getCacheManager().getCache().entrySet().iterator();
 
 		// Check if any cached user has the nickname.
 		while (iterator.hasNext()) {

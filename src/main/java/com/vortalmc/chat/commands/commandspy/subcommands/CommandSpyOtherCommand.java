@@ -10,7 +10,6 @@ import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.command.CommandListener;
 
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.config.Configuration;
 
 /**
@@ -26,9 +25,9 @@ public class CommandSpyOtherCommand extends CommandListener {
 
 	public CommandSpyOtherCommand() {
 		super(
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("CommandSpy.Other.Name"),
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("CommandSpy.Other.Permission"),
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("CommandSpy.Other.Aliases").toArray(new String[0])
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("CommandSpy.Subcommands.Other.Name"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("CommandSpy.Subcommands.Other.Permission"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("CommandSpy.Subcommands.Other.Aliases").toArray(new String[0])
 			);
 	}
 
@@ -36,24 +35,29 @@ public class CommandSpyOtherCommand extends CommandListener {
 	public void onCommand(CommandSender sender, String[] args) {
 
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+		
+		// Attempt to get the target's player data from mojang.
 		String mojangPlayerData = Utils.getMojangPlayerData(args[0]);
 
-		// Check if the target is a valid minecraft account.
+		// If the response is null, that implies the player does not exist, or the
+		// authentication servers are offline. In either case the command spy will not be
+		// updated.
 		if (mojangPlayerData == null) {
 
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
+			
 			return;
 		}
-
-		UUID uuid = UUID.fromString(
-				Utils.formatUUID(new Gson().fromJson(mojangPlayerData, JsonObject.class).get("id").getAsString()));
+		
+		UUID uuid = UUID.fromString(Utils.formatUUID(new Gson().fromJson(mojangPlayerData, JsonObject.class).get("id").getAsString()));
 		User target = User.fromUUID(uuid);
 
 		// Check if the target is in the database.
 		if (!target.isInDatabase()) {
+			
 			for (String index : messages.getStringList("Error.Player-Does-Not-Exist"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 
 			return;
 		}
@@ -64,14 +68,14 @@ public class CommandSpyOtherCommand extends CommandListener {
 			target.disableCommandSpy();
 
 			for (String index : messages.getStringList("Commands.CommandSpy.Other.Disabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 
 		} else {
 
 			target.enableCommandSpy();
 
 			for (String index : messages.getStringList("Commands.CommandSpy.Other.Enabled"))
-				sender.sendMessage(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", args[0]))));
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 		}
 	}
 
@@ -80,7 +84,7 @@ public class CommandSpyOtherCommand extends CommandListener {
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
 		for (String index : messages.getStringList("Error.Permission-Denied"))
-			sender.sendMessage(new TextComponent(Utils.translateColor(index)));
+			sender.sendMessage(Utils.translateColor(index));
 	}
 
 }

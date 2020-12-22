@@ -6,7 +6,6 @@ import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.mysql.CachedRow;
 
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.config.Configuration;
@@ -29,6 +28,7 @@ public class PlayerLeaveEvent implements Listener {
 
 		User user = User.fromProxiedPlayer(event.getPlayer());
 
+		// Push the user's cache to the database.
 		try {
 			if (user.dataIsCached()) {
 				CachedRow row = user.getUserData();
@@ -41,7 +41,8 @@ public class PlayerLeaveEvent implements Listener {
 
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
+		// Display the player leave message.
 		for (String index : messages.getStringList("Events.Player-Leave.Leave-Message"))
-			ProxyServer.getInstance().broadcast(new TextComponent(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName()))));
+			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 	}
 }

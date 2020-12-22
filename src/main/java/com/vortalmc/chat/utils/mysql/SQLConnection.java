@@ -46,7 +46,7 @@ public final class SQLConnection extends AbstractSQLConnection {
 
 		synchronized (VortalMCChat.getInstance()) {
 			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection("jdbc:mysql://" + getHost() + "/" + getDatabase(), getUsername(), getPassword());
+			connection = DriverManager.getConnection("jdbc:mysql://" + getHost() + "/" + getDatabase() + "?autoReconnect=true", getUsername(), getPassword());
 			connection.setAutoCommit(false); // IMPORTANT: DO NOT REMOVE!!
 		}
 	}

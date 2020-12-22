@@ -40,7 +40,7 @@ Commands:
     Usage:
     - '&cVortal&7MC &8» &7Usage: &c/nickname <nickname>&7!'
     Updated:
-    - '&cVortal&7MC &8» &7You have changed your nickname to &c${NICKNAME}&7!'
+    - '&cVortal&7MC &8» &7You have changed your nickname to &f${NICKNAME}&7!'
     Removed:
     - '&cVortal&7MC &8» &7You have removed your nickname!'
     Nickname-In-Use:
@@ -50,9 +50,9 @@ Commands:
     Forbidden-Character:
     - '&cVortal&7MC &8» &7You are not allowed to use &8''&c${CHARACTER}&8'' &7in a nickname!'
     Nickname-Too-Big:
-    - '&cVortal&7MC &8» &7The nickname &c${NICKNAME} &7is too large, please enter a nickname under &c${MAXSIZE} &7characters!'
+    - '&cVortal&7MC &8» &7The nickname &f${NICKNAME} &7is too large, please enter a nickname under &c${MAXSIZE} &7characters!'
     Nickname-Too-Small:
-    - '&cVortal&7MC &8» &7The nickname &c${NICKNAME} &7is too small, please enter a nickname over &c${MINSIZE} &7characters!'
+    - '&cVortal&7MC &8» &7The nickname &f${NICKNAME} &7is too small, please enter a nickname over &c${MINSIZE} &7characters!'
     Other:
       Usage: 
       - '&cVortal&7MC &8» &7Usage: &c/nickname <user> <nickname>&7!'
@@ -61,7 +61,47 @@ Commands:
       Removed:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
       Updated:
-      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &c${NICKNAME}&7!'
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &f${NICKNAME}&7!'
+  Prefix:
+    Usage:
+    - '&cVortal&7MC &8» &7Usage: &c/prefix <prefix>&7!'
+    Updated:
+    - '&cVortal&7MC &8» &7You have changed your prefix to &f${PREFIX}&7!'
+    Removed:
+    - '&cVortal&7MC &8» &7You have removed your prefix!'
+    Prefix-Too-Big:
+    - '&cVortal&7MC &8» &7The prefix &f${PREFIX} &7is too large, please enter a prefix under &c${MAXSIZE} &7characters!'
+    Prefix-Too-Small:
+    - '&cVortal&7MC &8» &7The prefix &f${PREFIX} &7is too small, please enter a prefix over &c${MINSIZE} &7characters!'
+    Forbidden-Character:
+    - '&cVortal&7MC &8» &7You are not allowed to use &8''&c${CHARACTER}&8'' &7in a prefix!'
+    Other:
+      Usage: 
+      - '&cVortal&7MC &8» &7Usage: &c/prefix <user> <prefix>&7!'
+      Removed:
+      - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7prefix!'
+      Updated:
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7prefix to &f${PREFIX}&7!'
+  Suffix:
+    Usage:
+    - '&cVortal&7MC &8» &7Usage: &c/suffix <suffix>&7!'
+    Updated:
+    - '&cVortal&7MC &8» &7You have changed your suffix to &f${SUFFIX}&7!'
+    Removed:
+    - '&cVortal&7MC &8» &7You have removed your suffix!'
+    Prefix-Too-Big:
+    - '&cVortal&7MC &8» &7The suffix &f${SUFFIX} &7is too large, please enter a suffix under &c${MAXSIZE} &7characters!'
+    Prefix-Too-Small:
+    - '&cVortal&7MC &8» &7The suffix &f${SUFFIX} &7is too small, please enter a suffix over &c${MINSIZE} &7characters!'
+    Forbidden-Character:
+    - '&cVortal&7MC &8» &7You are not allowed to use &8''&c${CHARACTER}&8'' &7in a suffix!'
+    Other:
+      Usage: 
+      - '&cVortal&7MC &8» &7Usage: &c/suffix <user> <suffix>&7!'
+      Removed:
+      - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7suffix!'
+      Updated:
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &suffix to &f${SUFFIX}&7!'
   Realname:
     Usage:
     - '&cVortal&7MC &8» &7Usage &c/realname <nickname>&7!'
@@ -105,7 +145,7 @@ Commands:
     Disabled:
     - '&cVortal&7MC &8» &7You have disabled command spy!'
     Format:
-    - '&cCommand&7Spy &8» &c${SENDER}&8: &7${COMMAND}'
+    - '&cCommand&7Spy &8» &7${SENDER}&8: &c${COMMAND}'
     Other:
       Player-Not-Specified:
       - '&cVortal&7MC &8» &7Please specify the player who''s command spy you want to toggle!'

@@ -14,7 +14,7 @@ public enum ResponseMethod {
 	LAST_MESSAGE_SENDER,
 
 	/**
-	 * SEnd the response to the player that the sender last messaged.
+	 * Send the response to the player that the sender last messaged.
 	 */
 	LAST_MESSAGE_RECEIVER;
 
