@@ -43,4 +43,5 @@ public class PlayerChatEvent implements Listener {
 			event.setCancelled(true);
 		}
 	}
+	
 }

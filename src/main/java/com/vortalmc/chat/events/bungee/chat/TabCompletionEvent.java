@@ -31,4 +31,5 @@ public class TabCompletionEvent implements Listener {
 				event.getSuggestions().add(user.getAsProxiedPlayer().getName());
 		}
 	}
+	
 }

@@ -3,9 +3,7 @@ package com.vortalmc.chat.users.meta;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.UUID;
-import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -128,12 +126,10 @@ public class MetaValidator {
 		// Check if the user is trying set their nickname to none.
 		if(Utils.stripColorCodes(nickname).equalsIgnoreCase("none"))
 			throw new ForbiddenTextException("none");
-		
-		Iterator<Entry<Object, Cache>> iterator = VortalMCChat.getInstance().getCacheManager().getCache().entrySet().iterator();
 
 		// Check if any cached user has the nickname.
-		while (iterator.hasNext()) {
-			String str = ((CachedRow) iterator.next().getValue()).getValue("nickname").toString();
+		for(Cache index : VortalMCChat.getInstance().getCacheManager().getCache().values()) {
+			String str = ((CachedRow) index).getValue("nickname").toString();
 
 			if (str.equalsIgnoreCase(nickname) || str.equalsIgnoreCase(Utils.stripColorCodes(nickname)))
 				throw new NicknameInUseException(nickname);

@@ -47,4 +47,5 @@ public class PlayerLeaveEvent implements Listener {
 			e.printStackTrace();
 		}
 	}
+	
 }

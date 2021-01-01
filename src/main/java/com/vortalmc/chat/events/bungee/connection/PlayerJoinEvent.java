@@ -47,4 +47,5 @@ public class PlayerJoinEvent implements Listener {
 				ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 		}
 	}
+	
 }

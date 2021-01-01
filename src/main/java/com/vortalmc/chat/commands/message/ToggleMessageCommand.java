@@ -26,37 +26,37 @@ public class ToggleMessageCommand extends CommandListener {
 
 	@Override
 	public void onCommand(CommandSender sender, String[] args) {
-		
+
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-		
+
 		// Check if it is a player trying to toggle their messaging.
-		if(!(sender instanceof ProxiedPlayer)) {
-			
+		if (!(sender instanceof ProxiedPlayer)) {
+
 			sender.sendMessage(Utils.translateColor("Error: You must be a player to use this command!"));
-			
+
 			return;
 		}
-		
+
 		User user = User.fromProxiedPlayer((ProxiedPlayer) sender);
 		String path;
-		
+
 		// Toggle the player's messaging.
-		if(user.hasMessagesEnabled()) {
-			
+		if (user.hasMessagesEnabled()) {
+
 			user.disableMessages();
 			path = "Messages-Disabled";
-			
+
 		} else {
-			
+
 			user.enableMessages();
 			path = "Messages-Enabled";
-			
+
 		}
-		
+
 		// Send the messaging toggled message.
-		for(String index : messages.getStringList("Commands.ToggleMessage." + path))
+		for (String index : messages.getStringList("Commands.ToggleMessage." + path))
 			sender.sendMessage(Utils.translateColor(index));
-		
+
 	}
 
 	@Override

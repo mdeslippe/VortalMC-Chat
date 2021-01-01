@@ -193,6 +193,9 @@ Events:
   Player-Leave:
     Leave-Message:
     - '&cVortal&7MC &8» &c${PLAYER} &7has left the server!'
+  Server-Switched:
+    Switch-Message:
+    - '&cVortal&7MC &8» &c${PLAYER} &7has moved to the &c${SERVER} &7server!'
 Error:
   Player-Does-Not-Exist:
   - '&cVortal&7MC &8» &7The player &c${PLAYER} &7does not exist.'

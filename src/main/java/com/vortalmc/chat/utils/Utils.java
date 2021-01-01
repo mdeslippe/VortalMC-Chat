@@ -43,13 +43,12 @@ public class Utils {
 	public static String getMojangPlayerData(String name) {
 
 		try {
-			String payload = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at="
-					+ System.currentTimeMillis();
+			String payload = "https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + System.currentTimeMillis();
 
 			HttpURLConnection con = (HttpURLConnection) new URL(payload).openConnection();
 			con.setRequestMethod("GET");
 
-			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) { // success
+			if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
 				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 				String inputLine;
 				StringBuffer response = new StringBuffer();
@@ -62,9 +61,13 @@ public class Utils {
 
 				return response.toString();
 			}
+			
 		} catch (IOException e) {
+			
 			return null;
+			
 		}
+		
 		return null;
 	}
 
@@ -117,11 +120,8 @@ public class Utils {
 	public static String formatUUID(String uuid) {
 		StringBuilder sb = new StringBuilder(uuid);
 		sb.insert(8, "-");
-		sb = new StringBuilder(sb.toString());
 		sb.insert(13, "-");
-		sb = new StringBuilder(sb.toString());
 		sb.insert(18, "-");
-		sb = new StringBuilder(sb.toString());
 		sb.insert(23, "-");
 		return sb.toString();
 	}

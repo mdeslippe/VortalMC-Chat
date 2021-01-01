@@ -30,4 +30,5 @@ public class FirstJoinEvent implements Listener {
 		for (String index : messages.getStringList("Events.Player-Join.First-Join-Message"))
 			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 	}
+	
 }

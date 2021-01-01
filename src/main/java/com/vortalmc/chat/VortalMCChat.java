@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Map.Entry;
 
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
 import com.vortalmc.chat.commands.channel.ChannelCommand;
@@ -25,6 +23,7 @@ import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
 import com.vortalmc.chat.events.bungee.chat.TabCompletionEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerLeaveEvent;
+import com.vortalmc.chat.events.bungee.connection.PlayerServerSwitchEvent;
 import com.vortalmc.chat.events.custom.chat.MessageEvent;
 import com.vortalmc.chat.events.custom.command.CommandEvent;
 import com.vortalmc.chat.events.custom.connection.FirstJoinEvent;
@@ -247,8 +246,7 @@ public class VortalMCChat extends Plugin {
 		try {
 			this.getMySQLConnection().open();
 
-			this.getMySQLConnection()
-					.runUpdate(
+			this.getMySQLConnection().runUpdate(
 							"CREATE TABLE IF NOT EXISTS `VortalMC-Chat` (\n" 
 							+ "    `uuid` VARCHAR(36),\n"
 							+ "    `channel` VARCHAR(255),\n" 
@@ -264,11 +262,11 @@ public class VortalMCChat extends Plugin {
 							+ "    `command-spy-status` BOOLEAN,\n"
 							+ "    `afk-status` BOOLEAN,\n" 
 							+ "    PRIMARY KEY (`uuid`)\n" 
-							+ ");");
+							+ ");"
+							);
 
 		} catch (ClassNotFoundException | SQLException e) {
 			this.getLogger().warning("Could not connect to the MySQL database: " + e.getMessage());
-			e.printStackTrace();
 			this.sqlConnection = null;
 		}
 	}
@@ -308,9 +306,8 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerCommand(this, new CommandSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new ChannelCommand());
 		
-		Iterator<Entry<String, Channel>> channels = this.getChannelManager().getChannels().entrySet().iterator();
-		while(channels.hasNext())
-			this.getProxy().getPluginManager().registerCommand(this, new ImplicitChannelCommand(channels.next().getValue()));
+		for(Channel index : this.getChannelManager().getChannels().values())
+			this.getProxy().getPluginManager().registerCommand(this, new ImplicitChannelCommand(index));
 		
 	}
 
@@ -322,6 +319,7 @@ public class VortalMCChat extends Plugin {
 		// Bungee events.
 		this.getProxy().getPluginManager().registerListener(this, new PlayerJoinEvent());
 		this.getProxy().getPluginManager().registerListener(this, new PlayerLeaveEvent());
+		this.getProxy().getPluginManager().registerListener(this, new PlayerServerSwitchEvent());
 		this.getProxy().getPluginManager().registerListener(this, new PlayerChatEvent());
 		this.getProxy().getPluginManager().registerListener(this, new TabCompletionEvent());
 
@@ -465,4 +463,5 @@ public class VortalMCChat extends Plugin {
 			return null;
 		}
 	}
+	
 }

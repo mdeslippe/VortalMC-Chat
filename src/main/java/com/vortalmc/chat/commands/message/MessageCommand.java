@@ -123,4 +123,5 @@ public class MessageCommand extends CommandListener {
 		for (String index : messages.getStringList("Error.Permission-Denied"))
 			sender.sendMessage(Utils.translateColor(index));
 	}
+	
 }
