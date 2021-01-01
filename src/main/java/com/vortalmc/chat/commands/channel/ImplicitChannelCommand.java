@@ -1,6 +1,7 @@
 package com.vortalmc.chat.commands.channel;
 
 import com.vortalmc.chat.VortalMCChat;
+import com.vortalmc.chat.events.custom.chat.InternalChatEvent;
 import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.channel.Channel;
@@ -74,9 +75,9 @@ public class ImplicitChannelCommand extends CommandListener {
 		}
 
 		// Dispatch the ChatEvent with the ProxyServer.
-		ChatEvent event = ProxyServer.getInstance().getPluginManager().callEvent(new ChatEvent((ProxiedPlayer) sender, null, String.join(" ", args)));
+		ChatEvent event = ProxyServer.getInstance().getPluginManager().callEvent(new InternalChatEvent((ProxiedPlayer) sender, null, String.join(" ", args)));
 
-		// Send the sender's message if it has not be cancelled (for example by Litebans
+		// Dispatch message if it has not be cancelled (for example by Litebans
 		// because the player is muted).
 		if (!event.isCancelled())
 			VortalMCChat.getInstance().dispatchMessage((ProxiedPlayer) sender, String.join(" ", args), this.channel);

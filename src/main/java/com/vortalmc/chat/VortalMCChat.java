@@ -343,7 +343,8 @@ public class VortalMCChat extends Plugin {
 			this.getChannelManager().registerChannel(
 					new Channel(
 							config.getString(index + ".Name"),
-							config.getString(index + ".Permission"), config.getString(index + ".Format"),
+							config.getString(index + ".Permission"), 
+							config.getString(index + ".Format"),
 							config.getStringList(index + ".Aliases").toArray(new String[0]),
 							ChannelScope.valueOf(config.getString(index + ".Scope").toUpperCase())
 							)
@@ -441,22 +442,20 @@ public class VortalMCChat extends Plugin {
 			format = format.replace("${MESSAGE}", message);
 
 			for (ProxiedPlayer target : ProxyServer.getInstance().getPlayers()) {
-
-				// Check if the target is in the scope of the message.
-				if (!(channel.getChannelScope() == ChannelScope.GLOBAL || target.getServer() == player.getServer()))
-					continue;
-
+				
 				// Check if the target has permission receive messages from the channel the
 				// message is being dispatched to.
 				if (!target.hasPermission(channel.getPermission()))
 					continue;
-
+				
 				// Check if the target has chat enabled.
 				if (!User.fromProxiedPlayer(target).hasChatEnabled())
 					continue;
-
-				// If all checks have passed, send the message to the target.
-				target.sendMessage(Utils.translateColor(format));
+				
+				// If the checks have passed and the player target is in the scope of the
+				// message, send the message to the target.
+				if(channel.getChannelScope() == ChannelScope.GLOBAL || target.getServer().getInfo().getName() == player.getServer().getInfo().getName())
+					target.sendMessage(Utils.translateColor(format));
 			}
 		}
 	}

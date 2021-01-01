@@ -1,5 +1,5 @@
 # VortalMC-Chat 
-![](https://img.shields.io/badge/Latest%20Version-0.2.7--SNAPSHOT-Green) 
+![](https://img.shields.io/badge/Latest%20Version-0.2.8--SNAPSHOT-Green) 
 ![](https://img.shields.io/github/last-commit/mdeslippe/VortalMC-Chat?label=Last%20Update)
 ![](https://img.shields.io/github/languages/code-size/mdeslippe/vortalmc-chat?label=Code%20Size)
 

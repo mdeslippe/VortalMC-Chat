@@ -1,6 +1,7 @@
 package com.vortalmc.chat.events.bungee.chat;
 
 import com.vortalmc.chat.VortalMCChat;
+import com.vortalmc.chat.events.custom.chat.InternalChatEvent;
 import com.vortalmc.chat.users.User;
 import com.vortalmc.chat.utils.Utils;
 import com.vortalmc.chat.utils.event.defined.CommandExecutedEvent;
@@ -56,9 +57,15 @@ public class PlayerChatEvent implements Listener {
 			return;
 		}
 
+		// If the event is an InternalChatEvent (implying it was dispatched
+		// internally, not directly by the player), we do not
+		// want to dispatch the message here, thus we can ignore it.
+		if (event instanceof InternalChatEvent)
+			return;
+		
 		// Since all checks have passed, dispatch the message.
 		VortalMCChat.getInstance().dispatchMessage((ProxiedPlayer) event.getSender(), event.getMessage());
 		event.setCancelled(true);
 	}
-
+	
 }
