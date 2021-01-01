@@ -309,7 +309,29 @@ public class User {
 	public void disableMessages() {
 		this.getUserData().setColumn("enable-messages", false);
 	}
+	
+	/**
+	 * Check if the User has chat enabled.
+	 * 
+	 * @return The truth value associated with the User having chat enabled.
+	 */
+	public boolean hasChatEnabled() {
+		return new Boolean(this.getUserData().getValue("enable-chat").toString());
+	}
 
+	/**
+	 * Enabled chat for the User.
+	 */
+	public void enableChat() {
+		this.getUserData().setColumn("enable-chat", true);
+	}
+
+	/**
+	 * Disable chat for the User.
+	 */
+	public void disableChat() {
+		this.getUserData().setColumn("enable-chat", false);
+	}
 	/**
 	 * Check if the User's data is currently beign cached.
 	 * 
@@ -421,13 +443,14 @@ public class User {
 				+ "`suffix`, " 
 				+ "`nickname`, " 
 				+ "`enable-messages`, " 
+				+ "`enable-chat`, "
 				+ "`last-message-sender`, "
 				+ "`last-message-receiver`, " 
 				+ "`social-spy-status`, " 
 				+ "`command-spy-status`, "
 				+ "`afk-status`)" 
 				+ " VALUES " 
-				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 				);
 
 		// UUID.
@@ -455,16 +478,18 @@ public class User {
 			statement.setString(7, "none");
 		// Message enabled status.
 		statement.setBoolean(8, config.getBoolean("Defaults.Enable-Messages"));
+		// Chat enabled status.
+		statement.setBoolean(9, config.getBoolean("Defaults.Enable-Chat"));
 		// Last message sender.
-		statement.setString(9, "none");
-		// Last message receiver.
 		statement.setString(10, "none");
+		// Last message receiver.
+		statement.setString(11, "none");
 		// Social spy status.
-		statement.setBoolean(11, false);
-		// Command spy status.
 		statement.setBoolean(12, false);
-		// Afk status.
+		// Command spy status.
 		statement.setBoolean(13, false);
+		// Afk status.
+		statement.setBoolean(14, false);
 
 		VortalMCChat.getInstance().getMySQLConnection().runUpdate(statement);
 	}

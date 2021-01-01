@@ -12,6 +12,7 @@ Defaults:
   Suffix: 'none'
   Nickname: 'none'
   Enable-Messages: true
+  Enable-Chat: true
 Channels:
   Global:
     Name: global

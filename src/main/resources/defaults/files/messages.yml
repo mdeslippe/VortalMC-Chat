@@ -44,6 +44,11 @@ Commands:
     Other:
       Switched:
       - '&cVortal&7MC &8» &7You moved &c${PLAYER} &7to the &c${CHANNEL} &7channel!'
+  ToggleChat:
+    Chat-Enabled:
+    - '&cVortal&7MC &8» &7You have enabled chat!'
+    Chat-Disabled:
+    - '&cVortal&7MC &8» &7You have disabled chat!'
   Nickname:
     Usage:
     - '&cVortal&7MC &8» &7Usage: &c/nickname <nickname>&7!'
@@ -198,4 +203,6 @@ Events:
     - '&cVortal&7MC &8» &c${PLAYER} &7has moved to the &c${SERVER} &7server!'
 Error:
   Player-Does-Not-Exist:
-  - '&cVortal&7MC &8» &7The player &c${PLAYER} &7does not exist.'
+  - '&cVortal&7MC &8» &7The player &c${PLAYER} &7does not exist!'
+  Chat-Not-Enabled:
+  - '&cVortal&7MC &8» &7You do not have chat enabled!'

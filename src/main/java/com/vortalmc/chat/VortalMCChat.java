@@ -13,12 +13,13 @@ import com.vortalmc.chat.commands.chatcolor.ChatColorCommand;
 import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
-import com.vortalmc.chat.commands.message.ToggleMessageCommand;
 import com.vortalmc.chat.commands.nickname.NicknameCommand;
 import com.vortalmc.chat.commands.prefix.PrefixCommand;
 import com.vortalmc.chat.commands.realname.RealNameCommand;
 import com.vortalmc.chat.commands.socialspy.SocialSpyCommand;
 import com.vortalmc.chat.commands.suffix.SuffixCommand;
+import com.vortalmc.chat.commands.toggle.ToggleChatCommand;
+import com.vortalmc.chat.commands.toggle.ToggleMessageCommand;
 import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
 import com.vortalmc.chat.events.bungee.chat.TabCompletionEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
@@ -256,6 +257,7 @@ public class VortalMCChat extends Plugin {
 							+ "    `suffix` VARCHAR(255),\n" 
 							+ "    `nickname` VARCHAR(255),\n"
 							+ "    `enable-messages` BOOLEAN,\n"
+							+ "    `enable-chat` BOOLEAN,\n"
 							+ "    `last-message-sender` VARCHAR(36),\n" 
 							+ "    `last-message-receiver` VARCHAR(36),\n"
 							+ "    `social-spy-status` BOOLEAN,\n"
@@ -301,10 +303,12 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerCommand(this, new ChatColorCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new MessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
-		this.getProxy().getPluginManager().registerCommand(this, new ToggleMessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new SocialSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new CommandSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new ChannelCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new ToggleMessageCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new ToggleChatCommand());
+		
 		
 		for(Channel index : this.getChannelManager().getChannels().values())
 			this.getProxy().getPluginManager().registerCommand(this, new ImplicitChannelCommand(index));
@@ -408,7 +412,9 @@ public class VortalMCChat extends Plugin {
 	public synchronized void dispatchMessage(ProxiedPlayer player, String message, Channel channel) {
 		User user = User.fromProxiedPlayer(player);
 
-		if (player.hasPermission(channel.getPermission())) {
+		// Check if the player has permission to send a message in the channel, and has
+		// chat enabled.
+		if (player.hasPermission(channel.getPermission()) && user.hasChatEnabled()) {
 
 			String format = channel.getFormat();
 
@@ -434,9 +440,24 @@ public class VortalMCChat extends Plugin {
 			format = format.replace("${DISPLAY_NAME}", user.getMeta().getsDisplayName());
 			format = format.replace("${MESSAGE}", message);
 
-			for (ProxiedPlayer index : ProxyServer.getInstance().getPlayers())
-				if ((channel.getChannelScope() == ChannelScope.GLOBAL || index.getServer() == player.getServer()) && index.hasPermission(channel.getPermission()))
-						index.sendMessage(Utils.translateColor(format));
+			for (ProxiedPlayer target : ProxyServer.getInstance().getPlayers()) {
+
+				// Check if the target is in the scope of the message.
+				if (!(channel.getChannelScope() == ChannelScope.GLOBAL || target.getServer() == player.getServer()))
+					continue;
+
+				// Check if the target has permission receive messages from the channel the
+				// message is being dispatched to.
+				if (!target.hasPermission(channel.getPermission()))
+					continue;
+
+				// Check if the target has chat enabled.
+				if (!User.fromProxiedPlayer(target).hasChatEnabled())
+					continue;
+
+				// If all checks have passed, send the message to the target.
+				target.sendMessage(Utils.translateColor(format));
+			}
 		}
 	}
 	

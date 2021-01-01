@@ -47,7 +47,7 @@ public class ImplicitChannelCommand extends CommandListener {
 
 		// Check to see if the sender is a player.
 		if (!(sender instanceof ProxiedPlayer)) {
-			
+
 			sender.sendMessage(new TextComponent("Error: You must be a player to execute this command!"));
 
 			return;
@@ -63,14 +63,22 @@ public class ImplicitChannelCommand extends CommandListener {
 
 			return;
 		}
-		
+
+		// Check to make sure the player has chat enabled.
+		if (!User.fromProxiedPlayer((ProxiedPlayer) sender).hasChatEnabled()) {
+
+			for (String index : messages.getStringList("Error.Chat-Not-Enabled"))
+				sender.sendMessage(Utils.translateColor(index));
+
+			return;
+		}
+
 		// Dispatch the ChatEvent with the ProxyServer.
-		ChatEvent event = ProxyServer.getInstance().getPluginManager().callEvent(
-				new ChatEvent((ProxiedPlayer) sender, null, String.join(" ", args))
-				);
-		
-		// Send the sender's message if it has not be cancelled (for example by Litebans because the player is muted).
-		if(!event.isCancelled())
+		ChatEvent event = ProxyServer.getInstance().getPluginManager().callEvent(new ChatEvent((ProxiedPlayer) sender, null, String.join(" ", args)));
+
+		// Send the sender's message if it has not be cancelled (for example by Litebans
+		// because the player is muted).
+		if (!event.isCancelled())
 			VortalMCChat.getInstance().dispatchMessage((ProxiedPlayer) sender, String.join(" ", args), this.channel);
 	}
 

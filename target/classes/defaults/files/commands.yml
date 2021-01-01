@@ -31,6 +31,12 @@ Channel:
       Name: '${PLAYER}'
       Permission: 'vortalmcchat.channel.change.other'
       Aliases: null 
+ToggleChat:
+  Name: 'togglechat'
+  Permission: 'vortalmcchat.chat.toggle'
+  Aliases:
+  - 'togglechatting'
+  - 'tchat'
 Nickname:
   Name: 'nickname'
   Permission: 'vortalmcchat.nickname'

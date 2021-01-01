@@ -1,4 +1,4 @@
-package com.vortalmc.chat.commands.message;
+package com.vortalmc.chat.commands.toggle;
 
 import com.vortalmc.chat.VortalMCChat;
 import com.vortalmc.chat.users.User;
