@@ -209,7 +209,7 @@ public class MetaManager {
 	 * 
 	 * @return The User's preferred name.
 	 */
-	public String getPreferedName() {
+	public String getPreferredName() {
 		
 		String color = "";
 		if(!this.getNameColor().equalsIgnoreCase(VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration().getString("Defaults.Name-Color")))

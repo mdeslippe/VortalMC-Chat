@@ -59,6 +59,17 @@ Suffix:
       Name: '${PLAYER}'
       Permission: 'vortalmcchat.suffix.other'
       Aliases: null
+ChatColor:
+  Name: 'chatcolor'
+  Permission: 'vortalmcchat.chatcolor'
+  Aliases:
+  - 'cc'
+  - 'colorchat'
+  Subcommands:
+    Other:
+      Name: '${PLAYER}'
+      Permission: 'vortalmcchat.chatcolor.other'
+      Aliases: null
 Realname:
   Name: 'realname'
   Permission: 'vortalmcchat.realname'
@@ -74,10 +85,17 @@ Message:
   - 'dm'
   - 'whisper'
   - 'tell'
+ToggleMessage:
+  Name: 'togglemessage'
+  Permission: 'vortalmcchat.message.toggle'
+  Aliases:
+  - 'togglemessageing'
+  - 'tmsg'
 Respond:
   Name: 'respond'
   Permission: 'vortalmcchat.message'
   Aliases:
+  - 'response'
   - 'r'
 SocialSpy:
   Name: 'socialspy'

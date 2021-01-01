@@ -55,7 +55,7 @@ public class LengthException extends Exception {
 	 * 
 	 * @return The type of length exception.
 	 */
-	public LengthExceptionType getType() {
+	public LengthExceptionType getLengthExceptionType() {
 		return this.type;
 	}
 

@@ -11,7 +11,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.vortalmc.chat.VortalMCChat;
 import com.vortalmc.chat.users.User;
+import com.vortalmc.chat.users.meta.exceptions.ForbiddenColorException;
 import com.vortalmc.chat.users.meta.exceptions.ForbiddenTextException;
+import com.vortalmc.chat.users.meta.exceptions.InvalidColorException;
 import com.vortalmc.chat.users.meta.exceptions.LengthException;
 import com.vortalmc.chat.users.meta.exceptions.LengthExceptionType;
 import com.vortalmc.chat.users.meta.exceptions.NicknameCannotBePlayerNameException;
@@ -59,14 +61,17 @@ public class MetaValidator {
 	 * @throws LengthException        If the prefix is too short or too long.
 	 */
 	public void validatePrefix(String prefix) throws ForbiddenTextException, LengthException {
-
+		
+		// Check if the prefix contains forbidden text.
 		for (String index : config.getStringList("Prefix.Forbidden-Text"))
 			if (prefix.contains(index) || Utils.stripColorCodes(prefix).contains(index))
 				throw new ForbiddenTextException(index);
-
+		
+		// Check if the prefix meets the minimum prefix length requirement.
 		if (prefix.length() < config.getInt("Prefix.Minimum-Length"))
 			throw new LengthException(prefix.length(), LengthExceptionType.TOO_SMALL);
 
+		// Check if the prefix exceeds the maximum prefix length requirement.
 		if (prefix.length() > config.getInt("Prefix.Maximum-Length"))
 			throw new LengthException(prefix.length(), LengthExceptionType.TOO_BIG);
 	}
@@ -80,13 +85,17 @@ public class MetaValidator {
 	 * @throws LengthException        If the suffix is too short or too long.
 	 */
 	public void validateSuffix(String suffix) throws ForbiddenTextException, LengthException {
+		
+		// Check if the suffix contains forbidden text.
 		for (String index : config.getStringList("Suffix.Forbidden-Text"))
 			if (suffix.contains(index) || Utils.stripColorCodes(suffix).contains(index))
 				throw new ForbiddenTextException(index);
 
+		// Check if the suffix meets the minimum suffix length requirement.
 		if (suffix.length() < config.getInt("Prefix.Minimum-Length"))
 			throw new LengthException(suffix.length(), LengthExceptionType.TOO_SMALL);
 
+		// Check if the suffix exceeds the maximum suffix length requirement.
 		if (suffix.length() > config.getInt("Prefix.Maximum-Length"))
 			throw new LengthException(suffix.length(), LengthExceptionType.TOO_BIG);
 	}
@@ -115,7 +124,11 @@ public class MetaValidator {
 		for (String index : config.getStringList("Nickname.Forbidden-Text"))
 			if (nickname.contains(index) || Utils.stripColorCodes(nickname).contains(index))
 				throw new ForbiddenTextException(index);
-
+		
+		// Check if the user is trying set their nickname to none.
+		if(Utils.stripColorCodes(nickname).equalsIgnoreCase("none"))
+			throw new ForbiddenTextException("none");
+		
 		Iterator<Entry<Object, Cache>> iterator = VortalMCChat.getInstance().getCacheManager().getCache().entrySet().iterator();
 
 		// Check if any cached user has the nickname.
@@ -138,18 +151,21 @@ public class MetaValidator {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
+		// Check if the nickname meets the minimum nickname length requirement.
 		if (Utils.stripColorCodes(nickname).length() < config.getInt("Nickname.Minimum-Length"))
 			throw new LengthException(Utils.stripColorCodes(nickname).length(), LengthExceptionType.TOO_SMALL);
-
+		
+		// Check if the nickname exceeds the maximum nickname length requirement.
 		if (Utils.stripColorCodes(nickname).length() > config.getInt("Nickname.Maximum-Length"))
 			throw new LengthException(Utils.stripColorCodes(nickname).length(), LengthExceptionType.TOO_BIG);
 
+		// Check if the nickname is the username of a player that has joined the server before.
 		String playerDataResponse = Utils.getMojangPlayerData(Utils.stripColorCodes(nickname));
+		
 		if (playerDataResponse != null) {
 
-			User user = User.fromUUID(UUID.fromString(Utils
-					.formatUUID(new Gson().fromJson(playerDataResponse, JsonObject.class).get("id").getAsString())));
+			User user = User.fromUUID(UUID.fromString(Utils.formatUUID(new Gson().fromJson(playerDataResponse, JsonObject.class).get("id").getAsString())));
 
 			if (ProxyServer.getInstance().getPlayer(user.getUUID()) != null || user.isInDatabase())
 				throw new NicknameCannotBePlayerNameException(nickname);
@@ -157,29 +173,47 @@ public class MetaValidator {
 	}
 
 	/**
-	 * Validate chat colors.
+	 * Validate a chat color.
 	 * 
 	 * @param color The color to validate.
 	 * 
-	 * @throws ForbiddenTextException If an forbidden color has been detected.
+	 * @throws InvalidColorException If the color specified is not a valid color.
+	 * @throws ForbiddenColorException If an forbidden color has been detected.
 	 */
-	public void validateChatColor(String color) throws ForbiddenTextException {
-		for (String index : config.getStringList("Chat-Color.Forbidden-Colors"))
+	public void validateChatColor(String color) throws InvalidColorException, ForbiddenColorException {
+		
+		// Check if the color specified is a valid color code.
+		if(!color.matches("[&][a-f|A-F|0-9|K-R|k-r]"))
+			throw new InvalidColorException(color);
+		
+		// Check if the color specified is allowed.
+		for (String index : config.getStringList("Chat-Color.Allowed-Colors"))
 			if (color.contains(index))
-				throw new ForbiddenTextException(index);
+				return;
+		
+		throw new ForbiddenColorException(color);
 	}
 
 	/**
-	 * Validate name colors.
+	 * Validate a name color..
 	 * 
 	 * @param color The color to validate.
 	 * 
-	 * @throws ForbiddenTextException If an forbidden color has been detected.
+	 * @throws InvalidColorException If the color specified is not a valid color.
+	 * @throws ForbiddenColorException If an forbidden color has been detected.
 	 */
-	public void validateNameColor(String color) throws ForbiddenTextException {
-		for (String index : config.getStringList("Name-Color.Forbidden-Colors"))
+	public void validateNameColor(String color) throws InvalidColorException, ForbiddenColorException {
+		
+		// Check if the color specified is a valid color code.
+		if(!color.matches("[&][a-f|A-F|0-9|K-R|k-r]"))
+			throw new InvalidColorException(color);
+		
+		// Check if the color specified is allowed.
+		for (String index : config.getStringList("Name-Color.Allowed-Colors"))
 			if (color.contains(index))
-				throw new ForbiddenTextException(index);
+				return;
+		
+		throw new ForbiddenColorException(color);
 	}
 
 }

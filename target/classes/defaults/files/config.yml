@@ -11,11 +11,12 @@ Defaults:
   Prefix: 'none'
   Suffix: 'none'
   Nickname: 'none'
+  Enable-Messages: true
 Channels:
   Global:
     Name: global
     Permission: vortalmcchat.channel.global
-    Format: '${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&r${PREFIX}${DISPLAY_NAME}&r${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: global
     Aliases:
     - 'g'
@@ -29,7 +30,7 @@ Channels:
   Local:
     Name: local
     Permission: vortalmcchat.channel.local
-    Format: '&c[L] &r${PREFIX}${DISPLAY_NAME}${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
+    Format: '&c[L] &r${PREFIX}${DISPLAY_NAME}&r${SUFFIX} &8» ${CHAT_COLOR}${MESSAGE}'
     Scope: local
     Aliases:
     - 'l'
@@ -72,8 +73,34 @@ Suffix:
   - '~'
   - '&0'
 Name-Color:
-  Forbidden-Colors:
-  - '&0'
+  Allowed-Colors:
+  - '&1'
+  - '&2'
+  - '&3'
+  - '&4'
+  - '&5'
+  - '&6'
+  - '&7'
+  - '&9'
+  - '&a'
+  - '&b'
+  - '&c'
+  - '&d'
+  - '&e'
+  - '&f'
 Chat-Color:
-  Forbidden-Colors:
-  - '&0'
+  Allowed-Colors:
+  - '&1'
+  - '&2'
+  - '&3'
+  - '&4'
+  - '&5'
+  - '&6'
+  - '&7'
+  - '&9'
+  - '&a'
+  - '&b'
+  - '&c'
+  - '&d'
+  - '&e'
+  - '&f'

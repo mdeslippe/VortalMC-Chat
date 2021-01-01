@@ -38,7 +38,7 @@ public class ForbiddenTextException extends Exception {
 	 * 
 	 * @return The forbidden text that was detected.
 	 */
-	public String getText() {
+	public String getForbiddenText() {
 		return this.text;
 	}
 

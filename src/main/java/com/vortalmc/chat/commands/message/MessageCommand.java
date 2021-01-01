@@ -54,25 +54,43 @@ public class MessageCommand extends CommandListener {
 
 		// Define variables.
 		User messager = User.fromProxiedPlayer((ProxiedPlayer) sender);
-		User receiver = User.fromPartialName(args[0]);
+		User receiver = User.fromPartialName(Utils.stripColorCodes(args[0]));
 		String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
 		// Ensure the target player exists.
-		if (receiver == null) {
+		if (receiver == null || Utils.stripColorCodes(args[0]).equalsIgnoreCase("none")) {
 			
 			for (String index : messages.getStringList("Commands.Message.Player-Not-Found"))
 				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", Utils.stripColorCodes(args[0]))));
 			
 			return;
 		}
-
+		
+		// Check if the player sending the message has messages enabled.
+		if(!messager.hasMessagesEnabled()) {
+			
+			for(String index : messages.getStringList("Commands.Message.Sender-Has-Messages-Disabled"))
+				sender.sendMessage(Utils.translateColor(index));
+			
+			return;
+		}
+		
+		// Check if the player receiving the message has messages enabled.
+		if(!receiver.hasMessagesEnabled()) {
+			
+			for(String index : messages.getStringList("Commands.Message.Receiver-Has-Messages-Disabled"))
+				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
+			
+			return;
+		}
+		
 		// Send the message to the sender.
 		for (String index : messages.getStringList("Commands.Message.Send-Format")) {
 
 			MessageBuilder msg = new MessageBuilder(index);
 
-			msg.replace("${SENDER}", messager.getMeta().getPreferedName(), true);
-			msg.replace("${RECEIVER}", receiver.getMeta().getPreferedName(), true);
+			msg.replace("${SENDER}", messager.getMeta().getPreferredName(), true);
+			msg.replace("${RECEIVER}", receiver.getMeta().getPreferredName(), true);
 			msg.replace("${MESSAGE}", message, sender.hasPermission(permissions.getString("Color.Text")));
 
 			messager.getAsProxiedPlayer().sendMessage(msg.build());
@@ -83,8 +101,8 @@ public class MessageCommand extends CommandListener {
 
 			MessageBuilder msg = new MessageBuilder(index);
 
-			msg.replace("${SENDER}", messager.getMeta().getPreferedName(), true);
-			msg.replace("${RECEIVER}", receiver.getMeta().getPreferedName(), true);
+			msg.replace("${SENDER}", messager.getMeta().getPreferredName(), true);
+			msg.replace("${RECEIVER}", receiver.getMeta().getPreferredName(), true);
 			msg.replace("${MESSAGE}", message, sender.hasPermission(permissions.getString("Color.Text")));
 			
 			receiver.getAsProxiedPlayer().sendMessage(msg.build());

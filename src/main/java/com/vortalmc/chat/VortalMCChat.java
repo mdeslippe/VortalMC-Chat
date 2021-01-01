@@ -11,13 +11,16 @@ import java.util.Map.Entry;
 import com.vortalmc.chat.commands.base.VortalMCChatCommand;
 import com.vortalmc.chat.commands.channel.ChannelCommand;
 import com.vortalmc.chat.commands.channel.ImplicitChannelCommand;
+import com.vortalmc.chat.commands.chatcolor.ChatColorCommand;
 import com.vortalmc.chat.commands.commandspy.CommandSpyCommand;
 import com.vortalmc.chat.commands.message.MessageCommand;
 import com.vortalmc.chat.commands.message.RespondCommand;
+import com.vortalmc.chat.commands.message.ToggleMessageCommand;
 import com.vortalmc.chat.commands.nickname.NicknameCommand;
 import com.vortalmc.chat.commands.prefix.PrefixCommand;
 import com.vortalmc.chat.commands.realname.RealNameCommand;
 import com.vortalmc.chat.commands.socialspy.SocialSpyCommand;
+import com.vortalmc.chat.commands.suffix.SuffixCommand;
 import com.vortalmc.chat.events.bungee.chat.PlayerChatEvent;
 import com.vortalmc.chat.events.bungee.chat.TabCompletionEvent;
 import com.vortalmc.chat.events.bungee.connection.PlayerJoinEvent;
@@ -91,7 +94,7 @@ public class VortalMCChat extends Plugin {
 	@Override
 	public void onEnable() {
 		
-		// Be careful if you rearrange any method or constructor call.
+		// Be careful when rearranging any method or constructor call.
 		this.fileManager = new FileManager(this);
 		this.cacheManager = new CacheManager();
 		this.internalEventManager = new InternalEventManager();
@@ -110,6 +113,7 @@ public class VortalMCChat extends Plugin {
 	/**
 	 * Called when the plugin is disabled.
 	 */
+	@Override
 	public void onDisable() {
 		
 		this.metaValidator = null;
@@ -126,7 +130,7 @@ public class VortalMCChat extends Plugin {
 	/**
 	 * Reload the plugin.
 	 */
-	public void reload() {
+	public synchronized void reload() {
 		this.getLogger().info("Reloading the plugin");
 		this.onDisable();
 		this.onEnable();
@@ -253,6 +257,7 @@ public class VortalMCChat extends Plugin {
 							+ "    `prefix` VARCHAR(255),\n"
 							+ "    `suffix` VARCHAR(255),\n" 
 							+ "    `nickname` VARCHAR(255),\n"
+							+ "    `enable-messages` BOOLEAN,\n"
 							+ "    `last-message-sender` VARCHAR(36),\n" 
 							+ "    `last-message-receiver` VARCHAR(36),\n"
 							+ "    `social-spy-status` BOOLEAN,\n"
@@ -272,11 +277,16 @@ public class VortalMCChat extends Plugin {
 	 * Close the MySQL connection pool.
 	 */
 	private void disconnectFromMySQL() {
+		
 		try {
-			if (this.getMySQLConnection() != null)
+			if (this.getMySQLConnection() != null) {
+				this.getCacheManager().pushAllCache();
 				this.getMySQLConnection().close();
+			}
 		} catch (SQLException e) {
 			this.getLogger().warning("Error: An error has occurred when attempting to close the MySQL connection.");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -288,9 +298,12 @@ public class VortalMCChat extends Plugin {
 		this.getProxy().getPluginManager().registerCommand(this, new VortalMCChatCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new NicknameCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new PrefixCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new SuffixCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RealNameCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new ChatColorCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new MessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new RespondCommand());
+		this.getProxy().getPluginManager().registerCommand(this, new ToggleMessageCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new SocialSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new CommandSpyCommand());
 		this.getProxy().getPluginManager().registerCommand(this, new ChannelCommand());
@@ -394,7 +407,7 @@ public class VortalMCChat extends Plugin {
 	 * @param message The message to dispatch.
 	 * @param channel The channel to send the message in.
 	 */
-	public void dispatchMessage(ProxiedPlayer player, String message, Channel channel) {
+	public synchronized void dispatchMessage(ProxiedPlayer player, String message, Channel channel) {
 		User user = User.fromProxiedPlayer(player);
 
 		if (player.hasPermission(channel.getPermission())) {

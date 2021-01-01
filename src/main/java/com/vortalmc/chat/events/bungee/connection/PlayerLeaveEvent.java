@@ -25,24 +25,26 @@ public class PlayerLeaveEvent implements Listener {
 	 */
 	@EventHandler
 	public void onDisconnect(PlayerDisconnectEvent event) {
-
+		
 		User user = User.fromProxiedPlayer(event.getPlayer());
 
-		// Push the user's cache to the database.
+		// Push the user's cache to the database, and display the leave message. If the
+		// user's data is not cached it means they did not fully connect to the server, so
+		// we do not want to display the player leave message.
 		try {
 			if (user.dataIsCached()) {
 				CachedRow row = user.getUserData();
 				row.push();
 				VortalMCChat.getInstance().getCacheManager().removeCache(row);
+				
+				Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
+
+				// Display the player leave message.
+				for (String index : messages.getStringList("Events.Player-Leave.Leave-Message"))
+					ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
-
-		// Display the player leave message.
-		for (String index : messages.getStringList("Events.Player-Leave.Leave-Message"))
-			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
 	}
 }

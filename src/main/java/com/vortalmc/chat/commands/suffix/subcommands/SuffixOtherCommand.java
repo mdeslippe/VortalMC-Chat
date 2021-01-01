@@ -1,4 +1,4 @@
-package com.vortalmc.chat.commands.prefix.subcommands;
+package com.vortalmc.chat.commands.suffix.subcommands;
 
 import java.util.UUID;
 
@@ -16,21 +16,21 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.config.Configuration;
 
 /**
- * The VortalMC-Chat prefix command.
+ * The VortalMC-Chat suffix command.
  * 
  * <p>
- * This class is specifically dedicated to changing the prefix of other players.
+ * This class is specifically dedicated to changing the suffix of other players.
  * </p>
  * 
  * @author Myles Deslippe
  */
-public class PrefixOtherCommand extends CommandListener {
+public class SuffixOtherCommand extends CommandListener {
 
-	public PrefixOtherCommand() {
+	public SuffixOtherCommand() {
 		super(
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("Prefix.Subcommands.Other.Name"),
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("Prefix.Subcommands.Other.Permission"),
-			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("Prefix.Subcommands.Other.Aliases").toArray(new String[0])
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("Suffix.Subcommands.Other.Name"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getString("Suffix.Subcommands.Other.Permission"),
+			VortalMCChat.getInstance().getFileManager().getFile("commands").getConfiguration().getStringList("Suffix.Subcommands.Other.Aliases").toArray(new String[0])
 			);
 	}
 
@@ -45,7 +45,7 @@ public class PrefixOtherCommand extends CommandListener {
 		String mojangPlayerData = Utils.getMojangPlayerData(args[0]);
 
 		// If the response is null, that implies the player does not exist, or the
-		// authentication servers are offline. In either case the prefix will not be
+		// authentication servers are offline. In either case the suffix will not be
 		// updated.
 		if (mojangPlayerData == null) {
 			
@@ -68,25 +68,25 @@ public class PrefixOtherCommand extends CommandListener {
 			return;
 		}
 
-		// Check if the sender is trying to remove the target's prefix.
+		// Check if the sender is trying to remove the target's suffix.
 		if (args[1].equalsIgnoreCase("none") || args[1].equalsIgnoreCase("off")) {
 
-			target.getMeta().setPrefix("none");
+			target.getMeta().setSuffix("none");
 
-			for (String index : messages.getStringList("Commands.Prefix.Other.Removed"))
+			for (String index : messages.getStringList("Commands.Suffix.Other.Removed"))
 				sender.sendMessage(Utils.translateColor(index.replace("${PLAYER}", args[0])));
 			
 			return;
 		}
 
-		// Validate the prefix.
+		// Validate the suffix.
 		try {
 			
-			VortalMCChat.getInstance().getMetaValidator().validatePrefix(args[1]);
+			VortalMCChat.getInstance().getMetaValidator().validateSuffix(args[1]);
 			
 		} catch (ForbiddenTextException e) {
 
-			for (String index : messages.getStringList("Commands.Prefix.Forbidden-Character")) {
+			for (String index : messages.getStringList("Commands.Suffix.Forbidden-Character")) {
 
 				MessageBuilder msg = new MessageBuilder(index);
 				msg.replace("${CHARACTER}", e.getForbiddenText(), false);
@@ -98,23 +98,23 @@ public class PrefixOtherCommand extends CommandListener {
 			
 		} catch (LengthException e) {
 
-			String path = "Commands.Prefix.";
+			String path = "Commands.Suffix.";
 
 			switch (e.getLengthExceptionType()) {
 			case TOO_BIG:
-				path += "Prefix-Too-Big";
+				path += "Suffix-Too-Big";
 				break;
 			case TOO_SMALL:
-				path += "Prefix-Too-Small";
+				path += "Suffix-Too-Small";
 				break;
 			}
 
 			for (String index : messages.getStringList(path)) {
 
 				MessageBuilder msg = new MessageBuilder(index);
-				msg.replace("${PREFIX}", args[1], false);
-				msg.replace("${MINSIZE}", String.valueOf(config.getInt("Prefix.Minimum-Length")), false);
-				msg.replace("${MAXSIZE}", String.valueOf(config.getInt("Prefix.Maximum-Length")), false);
+				msg.replace("${SUFFIX}", args[1], false);
+				msg.replace("${MINSIZE}", String.valueOf(config.getInt("Suffix.Minimum-Length")), false);
+				msg.replace("${MAXSIZE}", String.valueOf(config.getInt("Suffix.Maximum-Length")), false);
 
 				sender.sendMessage(msg.build());
 			}
@@ -122,14 +122,14 @@ public class PrefixOtherCommand extends CommandListener {
 			return;
 		}
 
-		// Update the validated prefix.
-		target.getMeta().setPrefix(args[1]);
+		// Update the validated suffix.
+		target.getMeta().setSuffix(args[1]);
 
-		for (String index : messages.getStringList("Commands.Prefix.Other.Updated")) {
+		for (String index : messages.getStringList("Commands.Suffix.Other.Updated")) {
 
 			MessageBuilder msg = new MessageBuilder(index);
 			msg.replace("${PLAYER}", args[0], false);
-			msg.replace("${PREFIX}", args[1], sender.hasPermission(permissions.getString("Color.Prefix")));
+			msg.replace("${SUFFIX}", args[1], sender.hasPermission(permissions.getString("Color.Suffix")));
 
 			sender.sendMessage(msg.build());
 		}

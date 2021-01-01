@@ -38,7 +38,7 @@ public class ForbiddenColorException extends Exception {
 	 * 
 	 * @return The forbidden color that was detected.
 	 */
-	public String getColor() {
+	public String getForbiddenColor() {
 		return this.color;
 	}
 

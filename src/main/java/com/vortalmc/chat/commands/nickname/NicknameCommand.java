@@ -94,7 +94,7 @@ public class NicknameCommand extends CommandListener {
 			for (String msg : messages.getStringList("Commands.Nickname.Forbidden-Character")) {
 
 				MessageBuilder buffer = new MessageBuilder(msg);
-				buffer.replace("${CHARACTER}", e.getText(), false);
+				buffer.replace("${CHARACTER}", e.getForbiddenText(), false);
 
 				sender.sendMessage(buffer.build());
 			}
@@ -112,7 +112,7 @@ public class NicknameCommand extends CommandListener {
 
 			String path = "Commands.Nickname.";
 
-			switch (e.getType()) {
+			switch (e.getLengthExceptionType()) {
 			case TOO_BIG:
 				path += "Nickname-Too-Big";
 				break;

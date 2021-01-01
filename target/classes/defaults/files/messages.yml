@@ -16,6 +16,14 @@ Commands:
           - '&7Type &c/VortalMC-Chat help &7to view this message!'
           - '&7Type &c/VortalMC-Chat version &7to view the current version!'
           - '&7Type &c/VortalMC-Chat reload &7to reload the plugin!'
+          - '&7Type &c/channel [player] <channel> &7to change your chat channel!'
+          - '&7Type &c/message <player> <message> &7to message a player!'
+          - '&7Type &c/respond <message> &7to respond to a player''s message!'
+          - '&7Type &c/togglemessage &7to enable / disable messaging!'
+          - '&7Type &c/nickname [player] <nickname>&7to change your nickname!'
+          - '&7Type &c/realname <nickname> &7to view a player''s realname!'
+          - '&7Type &c/prefix [player] <prefix> &7to change your prefix!'
+          - '&7Type &c/suffix [player] <suffix> &7to change your suffix!'
           Sub-Commands: null
         Version-Command:
           Message:
@@ -62,6 +70,13 @@ Commands:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7nickname!'
       Updated:
       - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7nickname to &f${NICKNAME}&7!'
+  Realname:
+    Usage:
+    - '&cVortal&7MC &8» &7Usage &c/realname <nickname>&7!'
+    Format:
+    - '&cVortal&7MC &8» &c${NICKNAME}&7''s real name is &c${PLAYER}&7!'
+    Player-Not-Found:
+    - '&cVortal&7MC &8» &7No user is online with the nickname &c${NICKNAME}&7!'
   Prefix:
     Usage:
     - '&cVortal&7MC &8» &7Usage: &c/prefix <prefix>&7!'
@@ -101,14 +116,21 @@ Commands:
       Removed:
       - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7suffix!'
       Updated:
-      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &suffix to &f${SUFFIX}&7!'
-  Realname:
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7suffix to &f${SUFFIX}&7!'
+  Chat-Color:
     Usage:
-    - '&cVortal&7MC &8» &7Usage &c/realname <nickname>&7!'
-    Format:
-    - '&cVortal&7MC &8» &c${NICKNAME}&7''s real name is &c${PLAYER}&7!'
-    Player-Not-Found:
-    - '&cVortal&7MC &8» &7No user is online with the nickname &c${NICKNAME}&7!'
+    - '&cVortal&7MC &8» &7Usage: &c/chatcolor <color>&7!'
+    Updated:
+    - '&cVortal&7MC &8» &7You have changed your chat color to &f${COLOR}&7!'
+    Removed:
+    - '&cVortal&7MC &8» &7You have removed your chat color!'
+    Forbidden-Color:
+    - '&cVortal&7MC &8» &7You are not allowed to use &8''&c${COLOR}&8'' &7as a chat color!'
+    Other:
+      Removed:
+      - '&cVortal&7MC &8» &7You have removed &c${PLAYER}''s &7chat color!'
+      Updated:
+      - '&cVortal&7MC &8» &7You have changed &c${PLAYER}''s &7chat color to &f${COLOR}&7!'
   Message:
     Usage:
     - '&cVortal&7MC &8» &7Usage: &c/message <user> <message>&7!'
@@ -120,6 +142,15 @@ Commands:
     - '&cVortal&7MC &8» &7Please enter the message you wish to send!'
     Player-Not-Found:
     - '&cVortal&7MC &8» &7The player &c${PLAYER} &7is not online!'
+    Sender-Has-Messages-Disabled:
+    - '&cVortal&7MC &8» &7You do not have messages enabled!'
+    Receiver-Has-Messages-Disabled:
+    - '&cVortal&7MC &8» &c${PLAYER} &7does not have messages enabled!'
+  ToggleMessage:
+    Messages-Enabled:
+    - '&cVortal&7MC &8» &7You have enabled messages!'
+    Messages-Disabled:
+    - '&cVortal&7MC &8» &7You have disabled messages!'
   Respond:
     Has-No-Last-Message-Receiver-Error:
     - '&cVortal&7MC &8» &7You have not messaged anyone, please message someone before using &c/respond&7!'

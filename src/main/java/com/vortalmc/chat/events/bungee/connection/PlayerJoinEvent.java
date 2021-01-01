@@ -25,13 +25,26 @@ public class PlayerJoinEvent implements Listener {
 	@EventHandler
 	public void connected(ServerConnectedEvent event) {
 
-		// Load the User's data into cache.
-		User.fromProxiedPlayer(event.getPlayer()).getUserData();
-
 		Configuration messages = VortalMCChat.getInstance().getFileManager().getFile("messages").getConfiguration();
 
-		// Display the player join message.
-		for (String index : messages.getStringList("Events.Player-Join.Join-Message"))
-			ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
+		User user = User.fromProxiedPlayer(event.getPlayer());
+
+		// Check if the player has played the server before.
+		if (user.isInDatabase()) {
+
+			// Load the User's data into cache.
+			user.getUserData();
+
+			for (String index : messages.getStringList("Events.Player-Join.Join-Message"))
+				ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
+
+		} else {
+
+			// Create and then load the User's data into cache.
+			user.getUserData();
+
+			for (String index : messages.getStringList("Events.Player-Join.First-Join-Message"))
+				ProxyServer.getInstance().broadcast(Utils.translateColor(index.replace("${PLAYER}", event.getPlayer().getName())));
+		}
 	}
 }

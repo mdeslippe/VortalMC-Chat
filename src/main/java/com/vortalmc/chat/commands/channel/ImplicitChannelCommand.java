@@ -66,7 +66,7 @@ public class ImplicitChannelCommand extends CommandListener {
 		
 		// Dispatch the ChatEvent with the ProxyServer.
 		ChatEvent event = ProxyServer.getInstance().getPluginManager().callEvent(
-				new ChatEvent(((ProxiedPlayer) sender).getPendingConnection(), null, String.join(" ", args))
+				new ChatEvent((ProxiedPlayer) sender, null, String.join(" ", args))
 				);
 		
 		// Send the sender's message if it has not be cancelled (for example by Litebans because the player is muted).
