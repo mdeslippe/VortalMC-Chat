@@ -269,7 +269,8 @@ public class VortalMCChat extends Plugin {
 
 		} catch (ClassNotFoundException | SQLException e) {
 			this.getLogger().warning("Could not connect to the MySQL database: " + e.getMessage());
-			this.sqlConnection = null;
+			this.getLogger().warning("Shutting down!");
+			this.onDisable();
 		}
 	}
 
@@ -442,16 +443,16 @@ public class VortalMCChat extends Plugin {
 			format = format.replace("${MESSAGE}", message);
 
 			for (ProxiedPlayer target : ProxyServer.getInstance().getPlayers()) {
-				
+
 				// Check if the target has permission receive messages from the channel the
 				// message is being dispatched to.
 				if (!target.hasPermission(channel.getPermission()))
 					continue;
-				
+
 				// Check if the target has chat enabled.
 				if (!User.fromProxiedPlayer(target).hasChatEnabled())
 					continue;
-				
+
 				// If the checks have passed and the player target is in the scope of the
 				// message, send the message to the target.
 				if(channel.getChannelScope() == ChannelScope.GLOBAL || target.getServer().getInfo().getName() == player.getServer().getInfo().getName())

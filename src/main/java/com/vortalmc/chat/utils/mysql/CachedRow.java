@@ -122,8 +122,9 @@ public class CachedRow implements Cache {
 	 * </p>
 	 * 
 	 * @throws SQLException If an exception occurs.
+	 * @throws ClassNotFoundException 
 	 */
-	public void push() throws SQLException {
+	public void push() throws SQLException, ClassNotFoundException {
 
 		// Get the keys.
 		String keys = "";

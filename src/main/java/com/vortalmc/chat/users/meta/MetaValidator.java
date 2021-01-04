@@ -144,7 +144,7 @@ public class MetaValidator {
 			ResultSet results = VortalMCChat.getInstance().getMySQLConnection().runQuery(statement);
 			if (results.next())
 				throw new NicknameInUseException(nickname);
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		

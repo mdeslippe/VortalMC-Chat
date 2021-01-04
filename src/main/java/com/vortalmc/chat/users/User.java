@@ -359,7 +359,7 @@ public class User {
 		if (!this.isInDatabase()) {
 			try {
 				this.addUserToDatabase();
-			} catch (SQLException e) {
+			} catch (SQLException | ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
@@ -414,7 +414,7 @@ public class User {
 			}
 
 			return row;
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -429,8 +429,9 @@ public class User {
 	 * </p>
 	 * 
 	 * @throws SQLException If an SQL exception occurrs.
+	 * @throws ClassNotFoundException 
 	 */
-	public void addUserToDatabase() throws SQLException {
+	public void addUserToDatabase() throws SQLException, ClassNotFoundException {
 		Configuration config = VortalMCChat.getInstance().getFileManager().getFile("config").getConfiguration();
 
 		PreparedStatement statement = VortalMCChat.getInstance().getMySQLConnection().getConnection().prepareStatement(
@@ -506,7 +507,7 @@ public class User {
 			statement.setString(1, this.getUUID().toString());
 			ResultSet results = VortalMCChat.getInstance().getMySQLConnection().runQuery(statement);
 			return results.next();
-		} catch (SQLException e) {
+		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return false;
@@ -527,8 +528,9 @@ public class User {
 	 * @return If the update was successfull or not
 	 * 
 	 * @throws SQLException If an SQL exception occurs.
+	 * @throws ClassNotFoundException 
 	 */
-	public boolean updateColumn(String column, String value) throws SQLException {
+	public boolean updateColumn(String column, String value) throws SQLException, ClassNotFoundException {
 
 		if (this.isInDatabase()) {
 
